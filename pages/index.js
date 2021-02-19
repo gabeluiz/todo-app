@@ -13,39 +13,49 @@ export default function Home() {
     setTodos(todos.filter(t => t !== todo));
   }
 
-  console.log(todo);
-
-
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Todos - SIMPLE WAY</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
-          <h1 className={styles.title}>
-            TODOS, SEJA BEM VINDO
+        <h1 className={styles.title}>
+          TO-DO LIST, WELCOME.
         </h1>
+
         <div className={styles.card}>
-          <input value={todo} onChange={e => setTodo(e.target.value)} />
-          <button onClick={() => setTodos([...todos, todo])}className={styles.btnAdd}>Adicionar</button>
-          <>
-            <ul>
+          <input className={styles.inputAdd} value={todo} onChange={e => setTodo(e.target.value)} />
+          <button className={styles.buttonAdd} onClick={() => setTodos([...todos, todo])} placeholder="add todos here...">+</button>
+
+          <div className={styles.list}>
+            <p className={styles.info}> Your Todos: </p>
+            <>
+
               {todos.map((ronaldo) => {
                 return (
-                  <li>{ronaldo} <button onClick={() => removeTodo(ronaldo)}>X</button></li>
+                  <p className={styles.todos}>
+                    {ronaldo}
+                    <span
+                      className={styles.removeBtn}
+                      onClick={() => removeTodo(ronaldo)}>
+
+                      x
+                    </span>
+                  </p>
                 )
               })
               }
-            </ul>
 
-          </>
+            </>
+
+          </div>
         </div>
       </main>
       <footer className={styles.footer}>
         Powered by Rodrigo Manozzo e Gabriel Palioqui
       </footer>
-    </div>
+    </div >
   )
 }

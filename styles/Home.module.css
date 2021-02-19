@@ -1,19 +1,10 @@
-.container {
-  min-height: 100vh;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
 .main {
-  padding: 5rem 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  margin: auto;
+  text-align: center;
+  max-width: 700px;
+  margin: 60px auto 0 auto;
+  padding: 0px 20px;
 }
 
 .footer {
@@ -82,32 +73,12 @@
 
 .card {
   margin: 1rem;
-  flex-basis: 45%;
   padding: 1.5rem;
-  text-align: left;
-  color: inherit;
-  text-decoration: none;
-  border: 1px solid #eaeaea;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.card:hover,
-.card:focus,
-.card:active {
-  color: #0070f3;
-  border-color: #0070f3;
 }
 
 .card h3 {
   margin: 0 0 1rem 0;
   font-size: 1.5rem;
-}
-
-.card p {
-  margin: 0;
-  font-size: 1.25rem;
-  line-height: 1.5;
 }
 
 .logo {
@@ -121,52 +92,77 @@
   }
 }
 
-/* 
-========================
-      BUTTON ADD
-========================
-*/
-.btn {
-	line-height: 50px;
-	height: 50px;
-	text-align: center;
-	width: 250px;
-	cursor: pointer;
-} 
-.btnAdd {
-	color: rgb(0, 0, 0);
-	transition: all 0.5s;
-	position: relative;
+.card .inputAdd {
+  background: transparent;
+  border: solid 1px;
+  padding: 7px 10px;
+  border-right: none;
+  width: 70%;
+  color: #333;
+  border-color: #d63f74;
 }
-.btnAdd::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-	background-color: rgba(255,255,255,0.1);
-	transition: all 0.3s;
+.card .inputAdd:focus, .card .inputAdd:active {
+  outline: none;
 }
-.btnAdd:hover::before {
-	opacity: 0 ;
-	transform: scale(0.5,0.5);
+.card .buttonAdd {
+  border: solid 1px #d63f74;
+  padding: 7px 10px;
+  background: rgba(214, 63, 116, 0.8);
+  cursor: pointer;
+  width: 15%;
+  min-width: 20px;
+  transition: all 100ms linear 80ms;
+  color: #fefefe;
+  line-height: 1;
+  font-size: 18px;
 }
-.btnAdd::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-	opacity: 0;
-	transition: all 0.3s;
-	border: 1px solid rgba(0, 0, 0, 0.1);
-	transform: scale(1.2,1.2);
+.card .buttonAdd:focus, .card .buttonAdd:active {
+  outline: none;
 }
-.btnAdd:hover::after {
-	opacity: 1;
-	transform: scale(1,1);
+.card .buttonAdd:hover, .card .buttonAdd:active {
+  background: #d63f74;
+}
+.card .buttonAdd, .card .inputAdd {
+  vertical-align: middle;
+  height: 35px;
+  box-sizing: border-box;
+}
+
+.info{
+  padding: 7px;
+  text-align: left;
+  color: rgba(51, 51, 51, 0.5);
+}
+
+.removeBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.todos {
+  transition: all 100ms linear 100ms;
+  position: relative;
+  text-align: left;
+  margin: 30px auto;
+  padding: 7px;
+  padding-right: 28px;
+  border: solid 1px transparent;
+  color: #6d639a;
+}
+.todos:hover {
+  cursor: pointer;
+  border: solid 1px;
+}
+.todos:hover span {
+  visibility: visible;
+  color: inherit;
+}
+.todos span {
+  transition: all 100ms linear 100ms;
+  visibility: hidden;
+}
+.todos span:hover {
+  cursor: pointer;
 }
