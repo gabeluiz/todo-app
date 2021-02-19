@@ -11,7 +11,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          TODOS, SEJA BEM VINDO
+          TODOS LISTS, SEJA BEM VINDO
         </h1>
       </main>
 
