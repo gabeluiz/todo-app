@@ -146,14 +146,10 @@
   position: relative;
   text-align: left;
   margin: 30px auto;
-  padding: 7px;
+  padding: 5px;
   padding-right: 28px;
   border: solid 1px transparent;
-  color: #6d639a;
-}
-.todos:hover {
-  cursor: pointer;
-  border: solid 1px;
+  color: #262627;
 }
 .todos:hover span {
   visibility: visible;

@@ -8,9 +8,14 @@ export default function Home() {
 
   const [todos, setTodos] = useState(['Todo 1', 'Todo 2']);
   const [todo, setTodo] = useState('');
+  const [completed, setDoneTodo] = useState('');
 
   const removeTodo = todo => {
     setTodos(todos.filter(t => t !== todo));
+  }
+
+  const completeTodo = todo => {
+    setDoneTodo(({ ...completed, [todo]: !completed[todo] }));
   }
 
   return (
@@ -22,7 +27,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          TO-DO LIST, WELCOME.
+          To Do List
         </h1>
 
         <div className={styles.card}>
@@ -33,14 +38,15 @@ export default function Home() {
             <p className={styles.info}> Your Todos: </p>
             <>
 
-              {todos.map((ronaldo) => {
+              {todos.map((todo, index) => {
                 return (
-                  <p className={styles.todos}>
-                    {ronaldo}
+                  
+                    <p className={styles.todos} style={{ textDecoration: completed[todo] === true ? "line-through" : "" }}>
+                    <input type="checkbox" onChange={() => completeTodo(todo)}/>
+                    {todo}
                     <span
                       className={styles.removeBtn}
-                      onClick={() => removeTodo(ronaldo)}>
-
+                      onClick={() => removeTodo(todo)}>
                       x
                     </span>
                   </p>
