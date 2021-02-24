@@ -37,11 +37,7 @@ export default function Home() {
     <div>
       <main className={styles.main}>
         <h1 className={styles.title}>
-<<<<<<< HEAD
-          TODOS LISTS, SEJA BEM VINDO
-=======
           To Do List
->>>>>>> c2fb1bd5c3ae7ab989b63efd93850cc8bc305bf2
         </h1>
 
         <div className={styles.card}>
