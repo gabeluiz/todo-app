@@ -1,19 +1,25 @@
 
 .main {
-  margin: auto;
   text-align: center;
   max-width: 700px;
-  margin: 60px auto 0 auto;
+  margin: 60px auto 60px auto;
   padding: 0px 20px;
 }
 
 .footer {
   width: 100%;
   height: 100px;
+  background-color: #FFF;
   border-top: 1px solid #eaeaea;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: fixed;
+  bottom:0px;
+  left:0px;
+  right:0px;
+  height:50px;
+  margin-bottom:0px;
 }
 
 .footer img {
@@ -74,6 +80,10 @@
 .card {
   margin: 1rem;
   padding: 1.5rem;
+  background: #fff;
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: 0px 10px 15px rgba(0,0,0,0.1);
 }
 
 .card h3 {
@@ -98,16 +108,16 @@
   padding: 7px 10px;
   border-right: none;
   width: 70%;
-  color: #333;
-  border-color: #d63f74;
+  color: #808080;
+  border-color: #808080;
 }
 .card .inputAdd:focus, .card .inputAdd:active {
   outline: none;
 }
 .card .buttonAdd {
-  border: solid 1px #d63f74;
+  border: solid 1px #808080;
   padding: 7px 10px;
-  background: rgba(214, 63, 116, 0.8);
+  background: #333;
   cursor: pointer;
   width: 15%;
   min-width: 20px;
@@ -120,7 +130,7 @@
   outline: none;
 }
 .card .buttonAdd:hover, .card .buttonAdd:active {
-  background: #d63f74;
+  background: #808080
 }
 .card .buttonAdd, .card .inputAdd {
   vertical-align: middle;
@@ -131,7 +141,7 @@
 .info{
   padding: 7px;
   text-align: left;
-  color: rgba(51, 51, 51, 0.5);
+  color: #808080;
 }
 
 .removeBtn {
@@ -141,24 +151,35 @@
   transform: translateY(-50%);
 }
 
-.todos {
-  transition: all 100ms linear 100ms;
+.icon{
+  font-size: 10px;
+}
+
+.todoList {
   position: relative;
+  list-style: none;
+  height: 30px;
+  line-height: 30px;
+  background: #f2f2f2;
+  border-radius: 3px;
+  padding: 0 15px;
+  cursor: default;
+  overflow: hidden;
   text-align: left;
-  margin: 30px auto;
-  padding: 5px;
-  padding-right: 28px;
-  border: solid 1px transparent;
-  color: #262627;
 }
-.todos:hover span {
-  visibility: visible;
-  color: inherit;
+
+.todoList li .icon{
+  position: absolute;
+  right: -45px;
+  width: 25px;
+  text-align: center;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.todos span {
-  transition: all 100ms linear 100ms;
-  visibility: hidden;
+.todoList li:hover .icon{
+  right: 5px;
 }
-.todos span:hover {
+.labelTodo{
   cursor: pointer;
 }

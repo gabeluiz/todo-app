@@ -1,27 +1,47 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { useState } from 'react';
-
-
+import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export default function Home() {
 
-  const [todos, setTodos] = useState(['Todo 1', 'Todo 2']);
-  const [todo, setTodo] = useState('');
-  const [completed, setDoneTodo] = useState('');
+  const [input, setInput] = useState({ todoInput: '' });
 
-  const removeTodo = todo => {
-    setTodos(todos.filter(t => t !== todo));
+  const handleChangeInputTodo = e => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const [todos, setTodos] = useState([
+    { id: Math.random(), title: 'todo 1' },
+    { id: Math.random(), title: 'todo 2' },
+    { id: Math.random(), title: 'todo 3' }
+  ]);
+
+  function handleAddTodo() {
+    setTodos([...todos, { id: Math.random(), title: input.todoInput }]);
+    setInput({ todoInput: '' });
+  }
+  function handleRemoveTodo(id) {
+    setTodos(todos.filter(todo => todo.id !== id));
   }
 
-  const completeTodo = todo => {
-    setDoneTodo(({ ...completed, [todo]: !completed[todo] }));
+  function handleCompleteTodo(id){
+    const newTodos = todos.map(todo =>{
+      return todo.id === id ? {... todo, complete: !todo.complete} : todo;
+    });
+    setTodos(newTodos);
   }
+
+  useEffect(() => {
+    const filtered = todos.filter(todo => todo.complete);
+    document.title = `Você tem ${filtered.lengh} todos completos`
+  }, [todos]);
 
   return (
     <div>
       <Head>
-        <title>Todos - SIMPLE WAY</title>
+        <title>To Do List</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -31,32 +51,24 @@ export default function Home() {
         </h1>
 
         <div className={styles.card}>
-          <input className={styles.inputAdd} value={todo} onChange={e => setTodo(e.target.value)} />
-          <button className={styles.buttonAdd} onClick={() => setTodos([...todos, todo])} placeholder="add todos here...">+</button>
+          <input value={input.todoInput} name={'todoInput'} className={styles.inputAdd} onChange={handleChangeInputTodo} />
+          <button className={styles.buttonAdd} onClick={() => handleAddTodo()} placeholder="add todos here...">+</button>
 
-          <div className={styles.list}>
-            <p className={styles.info}> Your Todos: </p>
-            <>
 
-              {todos.map((todo, index) => {
-                return (
-                  
-                    <p className={styles.todos} style={{ textDecoration: completed[todo] === true ? "line-through" : "" }}>
-                    <input type="checkbox" onChange={() => completeTodo(todo)}/>
-                    {todo}
-                    <span
-                      className={styles.removeBtn}
-                      onClick={() => removeTodo(todo)}>
-                      x
-                    </span>
-                  </p>
-                )
-              })
-              }
-
-            </>
-
-          </div>
+          <p className={styles.info}> Your Todos: </p>
+          <>
+            {todos.map((todo) => {
+              return (
+                <ul className={styles.todoList}>
+                  <li key={todo.id}>
+                    <label style={{ textDecoration: todo.complete === true ? "line-through" : "" }} className={styles.labelTodo}><input type="checkbox" onChange={() => handleCompleteTodo(todo.id)}/> {todo.title}</label>
+                    <span onClick={() => handleRemoveTodo(todo.id)}><FontAwesomeIcon className={styles.icon} icon={faTrash} /></span>
+                  </li>
+                </ul>
+              )
+            })
+            }
+          </>
         </div>
       </main>
       <footer className={styles.footer}>
