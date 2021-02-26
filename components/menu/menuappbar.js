@@ -5,12 +5,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { signIn, signOut, useSession } from 'next-auth/client';
 import Button from '@material-ui/core/Button';
-import { Avatar } from '@material-ui/core';
+import Avatar from '../menu/avatar.js';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MenuAppBar() {
+  
   const [session, loading] = useSession();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -40,7 +40,7 @@ export default function MenuAppBar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" style={{ background: '#333' }}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <MenuIcon />
@@ -49,7 +49,7 @@ export default function MenuAppBar() {
             To DO list
           </Typography>
           {!session && <> {' '}
-            <Button variant="contained" color="primary" onClick={() => signIn('google')}>Sign in</Button>
+            <Button color="inherit" onClick={() => signIn('google')}>Sign in</Button>
           </>}
           {session && (
             <div>
@@ -77,6 +77,10 @@ export default function MenuAppBar() {
                 open={open}
                 onClose={handleClose}
               >
+                <Avatar></Avatar>
+                <MenuItem>{session.user.name}</MenuItem>
+                <MenuItem>{session.user.email}</MenuItem>
+                <hr></hr>
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem onClick={() => signOut()}>Logout</MenuItem>

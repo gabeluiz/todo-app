@@ -1,9 +1,6 @@
 import styles from '../styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { signIn, signOut, useSession } from 'next-auth/client';
-import Button from '@material-ui/core/Button';
 import MenuAppBar from '../components/menu/menuappbar.js';
 import Avatar from '../components/menu/avatar.js';
 
@@ -56,9 +53,6 @@ export default function Home() {
           <h1 className={styles.title}>
             TO DO LIST
         </h1>
-          <Avatar></Avatar>
-          Signed in as {session.user.name} <br />
-          <img src={session.user.image} style={{ borderRadius: "50%" }} /> <br />
           <div className={styles.card}>
             <form><input value={input.todoInput} name={'todoInput'} className={styles.inputAdd} onChange={(event) => handleChangeInputTodo(event)} />
               <button className={styles.buttonAdd} onClick={(event) => handleAddTodo(event)} placeholder="add todos here...">+</button></form>
@@ -84,7 +78,7 @@ export default function Home() {
                     <ul className={styles.todoList}>
                       <li key={todo.id}>
                         <label className={styles.labelTodo}> {todo.title}</label>
-                        <span onClick={() => handleRemoveTodo(todo.id)}><FontAwesomeIcon className={styles.icon} icon={faTrash} /></span>
+                        <span className={styles.icon} onClick={() => handleRemoveTodo(todo.id)}>X</span>
                       </li>
                     </ul>
                   )
@@ -94,8 +88,8 @@ export default function Home() {
           </div>
         </>}
       </main>
-      <footer className={styles.footer}>
-        Powered by <a className={styles.code} href="https://www.linkedin.com/in/rodrigo-manozzo-715a8273/" target="_blank"> Rodrigo Manozzo </a> e <a className={styles.code} href="https://www.linkedin.com/in/gabeluiz" target="_blank"> Gabriel Palioqui </a>
+      <footer className={styles.footer} >
+        Powered by {'  '}<a href="https://www.linkedin.com/in/rodrigo-manozzo-715a8273/" target="_blank"> Rodrigo Manozzo</a>{'  '}e{'  '}<a href="https://www.linkedin.com/in/gabeluiz" target="_blank">Gabriel Palioqui</a>
       </footer>
     </div >
   )
