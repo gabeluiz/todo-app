@@ -1,15 +1,17 @@
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { signIn, signOut, useSession } from 'next-auth/client'
+import { signIn, signOut, useSession } from 'next-auth/client';
+import Button from '@material-ui/core/Button';
+import MenuAppBar from '../components/menu/menuappbar.js';
 
 export default function Home() {
 
   const [input, setInput] = useState({ todoInput: '' });
   const [todos, setTodos] = useState([]);
   const [session, loading] = useSession();
-  
+
   function handleChangeInputTodo(e) {
     console.log(e);
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -34,28 +36,30 @@ export default function Home() {
   useEffect(() => {
     const filtered = todos.filter(todo => todo.complete);
     if (filtered.length <= 1)
-      document.title = `Você tem ${filtered.length} tarefa completa.`
+      document.title = `${filtered.length} tarefa completa.`
     else
-      document.title = `Você tem ${filtered.length} tarefas completas.`
+      document.title = `${filtered.length} tarefas completas.`
   }, [todos]);
 
   return (
     <div>
+      <MenuAppBar></MenuAppBar>
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          To Do List
-        </h1>
         {!session && <>
-          Not signed in <br />
-          <button onClick={() => signIn('google')}>Sign in</button>
+          <h1 className={styles.title}>
+            TO DO LIST <br />
+            please login to see ur todos
+        </h1>
         </>}
         {session && <>
-          Signed in as {session.user.email} <br />
-          <button onClick={() => signOut()}>Sign out</button>
+          <h1 className={styles.title}>
+            TO DO LIST
+        </h1>
+          Signed in as {session.user.name} <br />
+          <img src={session.user.image} style={{ borderRadius: "50%" }} /> <br />
           <div className={styles.card}>
             <form><input value={input.todoInput} name={'todoInput'} className={styles.inputAdd} onChange={(event) => handleChangeInputTodo(event)} />
               <button className={styles.buttonAdd} onClick={(event) => handleAddTodo(event)} placeholder="add todos here...">+</button></form>
-
             <p className={styles.info}> Your Tasks: </p>
             <>
               {todos.map((todo) => {
