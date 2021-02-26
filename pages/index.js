@@ -5,6 +5,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { signIn, signOut, useSession } from 'next-auth/client';
 import Button from '@material-ui/core/Button';
 import MenuAppBar from '../components/menu/menuappbar.js';
+import Avatar from '../components/menu/avatar.js';
 
 export default function Home() {
 
@@ -55,6 +56,7 @@ export default function Home() {
           <h1 className={styles.title}>
             TO DO LIST
         </h1>
+          <Avatar></Avatar>
           Signed in as {session.user.name} <br />
           <img src={session.user.image} style={{ borderRadius: "50%" }} /> <br />
           <div className={styles.card}>
