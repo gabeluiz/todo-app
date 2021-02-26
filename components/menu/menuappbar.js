@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { signIn, signOut, useSession } from 'next-auth/client';
 import Button from '@material-ui/core/Button';
+import { Avatar } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,7 +46,7 @@ export default function MenuAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Photos
+            To DO list
           </Typography>
           {!session && <> {' '}
             <Button variant="contained" color="primary" onClick={() => signIn('google')}>Sign in</Button>
@@ -59,7 +60,7 @@ export default function MenuAppBar() {
                 onClick={handleMenu}
                 color="inherit"
               >
-                <AccountCircle />
+                <Avatar></Avatar>
               </IconButton>
               <Menu
                 id="menu-appbar"
