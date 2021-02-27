@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import { signIn, signOut, useSession } from 'next-auth/client';
+import { useSession } from 'next-auth/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {

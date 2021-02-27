@@ -9,26 +9,29 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { signIn, signOut, useSession } from 'next-auth/client';
 import Button from '@material-ui/core/Button';
-import Avatar from '../menu/avatar.js';
+import Avatar from './avatar.js';
+import Divider from '@material-ui/core/Divider';
+import Fade from '@material-ui/core/Fade';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
+ appBar: {
+    zIndex: theme.zIndex.drawer + 1,
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
+  grow: {
+    flexGrow: 1
   },
-  title: {
-    flexGrow: 1,
-  },
+
 }));
 
 export default function MenuAppBar() {
-  
+
   const [session, loading] = useSession();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const [openDrawer, setOpernDrawer] = React.useState(false);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -38,18 +41,31 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
+  const handleDrawer = () => {
+    if(openDrawer){
+      setOpernDrawer(false);
+    }else{
+      setOpernDrawer(true);
+    }
+    
+  };
+
   return (
-    <div className={classes.root}>
-      <AppBar position="static" style={{ background: '#333' }}>
+      <AppBar color='secondary' className={classes.appBar}>
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+          <IconButton onClick={handleDrawer} edge="start" color="inherit" aria-label="menu">
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            To DO list
-          </Typography>
+          <div className={classes.grow} />
           {!session && <> {' '}
-            <Button color="inherit" onClick={() => signIn('google')}>Sign in</Button>
+            <Button
+              startIcon={<AccountCircle />}
+              variant="outlined"
+              color="primary"
+              onClick={() => signIn('google')}
+            >
+              Login
+            </Button>
           </>}
           {session && (
             <div>
@@ -76,11 +92,19 @@ export default function MenuAppBar() {
                 }}
                 open={open}
                 onClose={handleClose}
+                TransitionComponent={Fade}
               >
-                <Avatar></Avatar>
-                <MenuItem>{session.user.name}</MenuItem>
-                <MenuItem>{session.user.email}</MenuItem>
-                <hr></hr>
+                <MenuItem>
+                  <ListItemIcon>
+                    <Avatar />
+                  </ListItemIcon>
+                  <Typography variant="inherit" noWrap>
+                    {session.user.name}
+                    <br />
+                    {session.user.email}
+                  </Typography>
+                </MenuItem>
+                <Divider />
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem onClick={() => signOut()}>Logout</MenuItem>
@@ -89,6 +113,5 @@ export default function MenuAppBar() {
           )}
         </Toolbar>
       </AppBar>
-    </div>
   );
 }

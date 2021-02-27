@@ -1,14 +1,45 @@
-import styles from '../styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
-import { signIn, signOut, useSession } from 'next-auth/client';
-import MenuAppBar from '../components/menu/menuappbar.js';
-import Avatar from '../components/menu/avatar.js';
+import { useSession } from 'next-auth/client';
+import AppBar from '../components/topBar/appBar.js';
+import { makeStyles } from '@material-ui/core/styles';
+import Drawer from '../components/navBar/drawer.js';
+import { Box, Button, TextField, Typography, ButtonGroup } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import Link from '../components/Link';
+import Copyright from '../components/Copyright';
+
+const useStyles = makeStyles((theme) => ({
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  root: {
+    height: '100vh',
+  },
+  footer: {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    marginBottom: 0,
+  },
+  button: {
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.primary.main,
+  },
+  buttonGroup: {
+    boxShadow: '0 0 1em rgb(0 0 0 / 20%)',
+    width: 600,
+  }
+}));
 
 export default function Home() {
 
   const [input, setInput] = useState({ todoInput: '' });
   const [todos, setTodos] = useState([]);
   const [session, loading] = useSession();
+  const classes = useStyles();
 
   function handleChangeInputTodo(e) {
     console.log(e);
@@ -40,57 +71,76 @@ export default function Home() {
   }, [todos]);
 
   return (
-    <div>
-      <MenuAppBar></MenuAppBar>
-      <main className={styles.main}>
-        {!session && <>
-          <h1 className={styles.title}>
-            TO DO LIST <br />
-            please login to see ur todos
-        </h1>
-        </>}
-        {session && <>
-          <h1 className={styles.title}>
-            TO DO LIST
-        </h1>
-          <div className={styles.card}>
-            <form><input value={input.todoInput} name={'todoInput'} className={styles.inputAdd} onChange={(event) => handleChangeInputTodo(event)} />
-              <button className={styles.buttonAdd} onClick={(event) => handleAddTodo(event)} placeholder="add todos here...">+</button></form>
-            <p className={styles.info}> Your Tasks: </p>
-            <>
-              {todos.map((todo) => {
-                return (
-                  <ul className={styles.todoList}>
-                    <li key={todo.id}>
-                      <label style={{ textDecoration: todo.complete === true ? "line-through" : "" }} className={styles.labelTodo}><input type="checkbox" onChange={() => handleCompleteTodo(todo.id)} /> {todo.title}</label>
-                      <span className={styles.icon} onClick={() => handleRemoveTodo(todo.id)}>X</span>
-                    </li>
-                  </ul>
-                )
-              })
-              }
-            </>
-            <p className={styles.info}> Your Complete Tasks: </p>
-            <>
-              {todos.map((todo) => {
-                if (todo.complete)
+    <Container maxWidth="md">
+      <AppBar />
+      {/* para usar drawer lateral, ideal box display flex, para ficar side by side com o drawer */}
+      <Box display="flex">
+        {/* <Drawer /> */}
+        {/* nesse box abaixo usar o my and pt de cima para ficar justificado */}
+        <Box pt={12}>
+          {!session && <>
+            <Typography color='primary' variant="h4" component="h1" gutterBottom>
+              To-do list, do and gain productivity and organization <br />
+              Please login to see your todos
+            </Typography>
+          </>}
+          {session && <>
+            <Box>
+              <form>
+                <ButtonGroup className={classes.buttonGroup} size="small" aria-label="small outlined button group">
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    color="primary"
+                    value={input.todoInput}
+                    name={'todoInput'}
+                    label="Criar uma lista..."
+                    onChange={(event) => handleChangeInputTodo(event)}
+                  />
+                  <Button
+                    className={classes.button}
+                    onClick={(event) => handleAddTodo(event)}>
+                    +
+                </Button>
+                </ButtonGroup>
+              </form>
+              <p> itens concluídos: </p>
+              <>
+                {todos.map((todo) => {
                   return (
-                    <ul className={styles.todoList}>
+                    <ul>
                       <li key={todo.id}>
-                        <label className={styles.labelTodo}> {todo.title}</label>
-                        <span className={styles.icon} onClick={() => handleRemoveTodo(todo.id)}>X</span>
+                        <label style={{ textDecoration: todo.complete === true ? "line-through" : "" }} ><input type="checkbox" onChange={() => handleCompleteTodo(todo.id)} /> {todo.title}</label>
+                        <span onClick={() => handleRemoveTodo(todo.id)}>X</span>
                       </li>
                     </ul>
                   )
-              })
-              }
-            </>
-          </div>
-        </>}
-      </main>
-      <footer className={styles.footer} >
-        Powered by {'  '}<a href="https://www.linkedin.com/in/rodrigo-manozzo-715a8273/" target="_blank"> Rodrigo Manozzo</a>{'  '}e{'  '}<a href="https://www.linkedin.com/in/gabeluiz" target="_blank">Gabriel Palioqui</a>
-      </footer>
-    </div >
+                })
+                }
+              </>
+              <p> Your Complete Tasks: </p>
+              <>
+                {todos.map((todo) => {
+                  if (todo.complete)
+                    return (
+                      <ul>
+                        <li key={todo.id}>
+                          <label> {todo.title}</label>
+                          <span onClick={() => handleRemoveTodo(todo.id)}>X</span>
+                        </li>
+                      </ul>
+                    )
+                })
+                }
+              </>
+            </Box>
+          </>}
+          <footer className={classes.footer}>
+            <Copyright />
+          </footer>
+        </Box>
+      </Box>
+    </Container>
+
   )
 }
