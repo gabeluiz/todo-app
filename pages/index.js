@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   buttonGroup: {
     boxShadow: '0 0 1em rgb(0 0 0 / 20%)',
     width: 600,
-  }
+  },
 }));
 
 export default function Home() {
@@ -79,7 +79,7 @@ export default function Home() {
         {/* nesse box abaixo usar o my and pt de cima para ficar justificado */}
         <Box pt={12}>
           {!session && <>
-            <Typography color='primary' variant="h4" component="h1" gutterBottom>
+            <Typography color='primary' variant="h3" component="h1" gutterBottom>
               To-do list, do and gain productivity and organization <br />
               Please login to see your todos
             </Typography>
@@ -91,7 +91,7 @@ export default function Home() {
                   <TextField
                     variant="outlined"
                     size="small"
-                    color="primary"
+                    color="tertiary"
                     value={input.todoInput}
                     name={'todoInput'}
                     label="Criar uma lista..."
