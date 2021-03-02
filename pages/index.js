@@ -27,14 +27,15 @@ const useStyles = makeStyles((theme) => ({
   button: {
     backgroundColor: theme.palette.secondary.main,
     color: theme.palette.primary.main,
+    width: 20,
   },
   buttonGroup: {
     boxShadow: '0 0 1em rgb(0 0 0 / 20%)',
-    width: 600,
+    width: 670,
   },
 }));
 
-export default function Home() {
+export default function Home(props) {
 
   const [input, setInput] = useState({ todoInput: '' });
   const [todos, setTodos] = useState([]);
@@ -87,14 +88,15 @@ export default function Home() {
           {session && <>
             <Box>
               <form>
-                <ButtonGroup className={classes.buttonGroup} size="small" aria-label="small outlined button group">
+                <ButtonGroup fullWidth={true} className={classes.buttonGroup} size="small" aria-label="small outlined button group">
                   <TextField
                     variant="outlined"
                     size="small"
-                    color="tertiary"
+                    color="primary"
                     value={input.todoInput}
                     name={'todoInput'}
                     label="Criar uma lista..."
+                    fullWidth={true}
                     onChange={(event) => handleChangeInputTodo(event)}
                   />
                   <Button
@@ -119,6 +121,14 @@ export default function Home() {
                 }
               </>
               <p> Your Complete Tasks: </p>
+                <>
+                {props.regsTodo.map((regTodo) => {
+                  return (
+                    <div>{regTodo.task}</div>
+                  )
+                })
+                }
+                </>
               <>
                 {todos.map((todo) => {
                   if (todo.complete)
@@ -143,4 +153,14 @@ export default function Home() {
     </Container>
 
   )
+}
+
+export async function getStaticProps(){
+  const regsTodo = await fetch('http://localhost:3000/api/todo').then(res => res.json())
+
+  return {
+    props:{
+      regsTodo,
+    }
+  }
 }
