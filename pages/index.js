@@ -71,7 +71,7 @@ function Home(props) {
   const [checked, setChecked] = useState([0]);
 
   const onSubmit = async (data, e) => {
-    const res = fetch('http://localhost:3000/api/todo', {
+    const res = fetch('https://todos-swart.vercel.app/api/todo', {
       method: "post",
       body: JSON.stringify(data)
     })
