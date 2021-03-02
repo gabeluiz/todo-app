@@ -146,7 +146,6 @@ export async function getStaticProps() {
   return {
     props: {
       regsTodo,
-    },
-    revalidate: 1,
+    }
   }
 }
