@@ -8,7 +8,7 @@ import Container from '@material-ui/core/Container';
 import Link from '../components/Link';
 import Copyright from '../components/Copyright';
 import { useForm } from 'react-hook-form';
-import toast , { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -37,38 +37,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = (props) => {
+export default function Home(props) {
 
-  const [input, setInput] = useState({ todoInput: '' });
-  const [todos, setTodos] = useState([]);
   const [session, loading] = useSession();
   const classes = useStyles();
   const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
 
-  function handleChangeInputTodo(e) {
-    console.log(e);
-    setInput({ ...input, [e.target.name]: e.target.value });
-  };
-
-  function handleAddTodo(event) {
-    event.preventDefault();
-    setTodos([...todos, { id: Math.random(), title: input.todoInput }]);
-    setInput({ todoInput: '' });
-  }
-  function handleRemoveTodo(id) {
-    setTodos(todos.filter(todo => todo.id !== id));
-  }
-
-  function handleCompleteTodo(id) {
-    const newTodos = todos.map(todo => {
-      return todo.id === id ? { ...todo, complete: !todo.complete } : todo;
-    });
-    setTodos(newTodos);
-  }
-
   const onSubmit = async (data, e) => {
     console.log(data)
-    const res = await fetch("http://localhost:3000/api/todo", {
+    const res = await fetch("https://todos-swart.vercel.app/api/todo", {
       method: "post",
       body: JSON.stringify(data)
     })
@@ -82,13 +59,13 @@ const Home = (props) => {
     e.target.reset();
   }
 
-  useEffect(() => {
-    const filtered = todos.filter(todo => todo.complete);
-    if (filtered.length <= 1)
-      document.title = `${filtered.length} tarefa completa.`
-    else
-      document.title = `${filtered.length} tarefas completas.`
-  }, [todos]);
+  // useEffect(() => {
+  //   const filtered = props.regsTodo.filter(reg => reg.complete);
+  //   if (filtered.length <= 1)
+  //     document.title = `${filtered.length} tarefa completa.`
+  //   else
+  //     document.title = `${filtered.length} tarefas completas.`
+  // }, [todos]);
 
   return (
     <Container maxWidth="md">
@@ -120,43 +97,35 @@ const Home = (props) => {
                 </Button>
                 </ButtonGroup>
               </form>
-              <p> itens concluídos: </p>
+              <p> Task: </p>
               <>
-                {todos.map((todo) => {
+                {props.regsTodo.map((regTodo) => {
                   return (
                     <ul>
-                      <li key={todo.id}>
-                        <label style={{ textDecoration: todo.complete === true ? "line-through" : "" }} ><input type="checkbox" onChange={() => handleCompleteTodo(todo.id)} /> {todo.title}</label>
-                        <span onClick={() => handleRemoveTodo(todo.id)}>X</span>
+                      <li key={regTodo._id}>
+                        <label> {regTodo.task}</label>
+                        <span>X</span>
                       </li>
                     </ul>
                   )
                 })
                 }
               </>
-              <p> Your Complete Tasks: </p>
-              <>
-                {props.regsTodo.map((regTodo) => {
+              {/* <>
+                {todos.map((todo) => {
                   return (
-                    <div>{regTodo.task}</div>
+                    <ul>
+                      <li key={todo.id}>
+                        <label style={{ textDecoration: todo.complete === true ? "line-through" : "" }} ><input type="checkbox" onChange={() => handleCompleteTodo(todo.id)} /> {todo.title}</label>
+                        <span>X</span>
+                      </li>
+                    </ul>
                   )
                 })
                 }
-              </>
-              <>
-                {todos.map((todo) => {
-                  if (todo.complete)
-                    return (
-                      <ul>
-                        <li key={todo.id}>
-                          <label> {todo.title}</label>
-                          <span onClick={() => handleRemoveTodo(todo.id)}>X</span>
-                        </li>
-                      </ul>
-                    )
-                })
-                }
-              </>
+              </> */}
+              <p> Your Complete Tasks: </p>
+
             </Box>
           </>}
           <footer className={classes.footer}>
@@ -170,14 +139,14 @@ const Home = (props) => {
   )
 }
 
-export default Home
-
+//pegar dados do nosso banco de dados... por padrão GET
 export async function getStaticProps() {
-  const regsTodo = await fetch('http://localhost:3000/api/todo').then(res => res.json())
+  const regsTodo = await fetch('https://todos-swart.vercel.app/api/todo').then(res => res.json())
 
   return {
     props: {
       regsTodo,
-    }
+    },
+    revalidate: 1,
   }
 }
