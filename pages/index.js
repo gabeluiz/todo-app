@@ -141,11 +141,19 @@ export default function Home(props) {
 
 //pegar dados do nosso banco de dados... por padrão GET
 export async function getStaticProps() {
-  const regsTodo = await fetch('https://todos-swart.vercel.app/api/todo').then(res => res.json())
+  const regsTodo = await fetch('https://todos-swart.vercel.app/api/todo',
+  {
+    method: "GET",
+    headers: {
+      Accept: 'application/json, text/plain, */*',
+      'User-Agent': '*',
+    },
+  }).then(res => res.json())
 
   return {
     props: {
       regsTodo,
-    }
+    },
+    revalidate: 1,
   }
 }
