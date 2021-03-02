@@ -7,6 +7,8 @@ import { Box, Button, TextField, Typography, ButtonGroup } from '@material-ui/co
 import Container from '@material-ui/core/Container';
 import Link from '../components/Link';
 import Copyright from '../components/Copyright';
+import { useForm } from 'react-hook-form';
+import toast , { Toaster } from 'react-hot-toast';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -35,12 +37,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home(props) {
+const Home = (props) => {
 
   const [input, setInput] = useState({ todoInput: '' });
   const [todos, setTodos] = useState([]);
   const [session, loading] = useSession();
   const classes = useStyles();
+  const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
 
   function handleChangeInputTodo(e) {
     console.log(e);
@@ -61,6 +64,22 @@ export default function Home(props) {
       return todo.id === id ? { ...todo, complete: !todo.complete } : todo;
     });
     setTodos(newTodos);
+  }
+
+  const onSubmit = async (data, e) => {
+    console.log(data)
+    const res = await fetch("http://localhost:3000/api/todo", {
+      method: "post",
+      body: JSON.stringify(data)
+    })
+    if (res.ok) {
+      toast.success('task added.');
+    }
+    else {
+      toast.error('Please try later.');
+    }
+    console.log(e);
+    e.target.reset();
   }
 
   useEffect(() => {
@@ -87,21 +106,16 @@ export default function Home(props) {
           </>}
           {session && <>
             <Box>
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <ButtonGroup fullWidth={true} className={classes.buttonGroup} size="small" aria-label="small outlined button group">
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    color="primary"
-                    value={input.todoInput}
-                    name={'todoInput'}
-                    label="Criar uma lista..."
-                    fullWidth={true}
-                    onChange={(event) => handleChangeInputTodo(event)}
+                  <input ref={register}
+                    type="text"
+                    name="task"
                   />
                   <Button
                     className={classes.button}
-                    onClick={(event) => handleAddTodo(event)}>
+                    type="submit"
+                  >
                     +
                 </Button>
                 </ButtonGroup>
@@ -121,14 +135,14 @@ export default function Home(props) {
                 }
               </>
               <p> Your Complete Tasks: </p>
-                <>
+              <>
                 {props.regsTodo.map((regTodo) => {
                   return (
                     <div>{regTodo.task}</div>
                   )
                 })
                 }
-                </>
+              </>
               <>
                 {todos.map((todo) => {
                   if (todo.complete)
@@ -150,16 +164,19 @@ export default function Home(props) {
           </footer>
         </Box>
       </Box>
+      <Toaster />
     </Container>
 
   )
 }
 
-export async function getStaticProps(){
+export default Home
+
+export async function getStaticProps() {
   const regsTodo = await fetch('http://localhost:3000/api/todo').then(res => res.json())
 
   return {
-    props:{
+    props: {
       regsTodo,
     }
   }
