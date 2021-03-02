@@ -1,14 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect
+} from 'react';
 import { useSession } from 'next-auth/client';
 import AppBar from '../components/topBar/appBar.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '../components/navBar/drawer.js';
-import { Box, Button, TextField, Typography, ButtonGroup } from '@material-ui/core';
+import {
+  Box,
+  InputBase,
+  Typography,
+  ListItem,
+  ListItemIcon,
+  Checkbox,
+  ListItemSecondaryAction,
+  ListItemText,
+  IconButton,
+  List,
+  Paper
+} from '@material-ui/core';
 import Container from '@material-ui/core/Container';
-import Link from '../components/Link';
 import Copyright from '../components/Copyright';
 import { useForm } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
+import toast,
+{ Toaster } from 'react-hot-toast';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import AddIcon from '@material-ui/icons/Add';
+
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -23,109 +41,133 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 50,
     marginBottom: 0,
   },
-  button: {
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.primary.main,
-    width: 20,
+  list: {
+    width: '100%',
+    maxWidth: 560,
   },
-  buttonGroup: {
-    boxShadow: '0 0 1em rgb(0 0 0 / 20%)',
-    width: 670,
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
   },
+  iconButton: {
+    padding: 10,
+  },
+  paper: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 560,
+    backgroundColor: theme.palette.background.default
+  }
 }));
 
-export default function Home(props) {
+function Home(props) {
 
   const [session, loading] = useSession();
   const classes = useStyles();
   const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
+  const [checked, setChecked] = useState([0]);
 
   const onSubmit = async (data, e) => {
-    console.log(data)
-    const res = await fetch('https://todos-swart.vercel.app/api/todo', {
+    const res = fetch('http://localhost:3000/api/todo', {
       method: "post",
       body: JSON.stringify(data)
     })
-    if (res.ok) {
-      toast.success('task added.');
-    }
-    else {
-      toast.error('Please try later.');
-    }
-    console.log(e);
+
+    toast.promise(res, {
+      loading: 'Loading',
+      success: 'Task Added',
+      error: 'Error when fetching',
+    })
     e.target.reset();
   }
 
-  // useEffect(() => {
-  //   const filtered = props.regsTodo.filter(reg => reg.complete);
-  //   if (filtered.length <= 1)
-  //     document.title = `${filtered.length} tarefa completa.`
-  //   else
-  //     document.title = `${filtered.length} tarefas completas.`
-  // }, [todos]);
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+    
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
+  };
+
+  const handleDelete = (_id) => () => {
+
+    const res = fetch('https://todos-swart.vercel.app/api/todo', {
+      method: "delete",
+      body: JSON.stringify(_id)
+    })
+
+    toast.promise(res, {
+      loading: 'Loading',
+      success: 'Delete',
+      error: 'Error when fetching',
+    })
+
+  }
 
   return (
-    <Container maxWidth="md">
+    <Container>
       <AppBar />
       {/* para usar drawer lateral, ideal box display flex, para ficar side by side com o drawer */}
-      <Box display="flex">
+      <Box display="flex" justifyContent="center">
         {/* <Drawer /> */}
         {/* nesse box abaixo usar o my and pt de cima para ficar justificado */}
-        <Box pt={12}>
+        <Box pt={12} >
           {!session && <>
-            <Typography color='primary' variant="h3" component="h1" gutterBottom>
+            <Typography align="center" color="text" variant="h3" component="h1" gutterBottom>
               To-do list, do and gain productivity and organization <br />
               Please login to see your todos
             </Typography>
           </>}
           {session && <>
             <Box>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <ButtonGroup fullWidth={true} className={classes.buttonGroup} size="small" aria-label="small outlined button group">
-                  <input ref={register}
-                    type="text"
-                    name="task"
-                  />
-                  <Button
-                    className={classes.button}
-                    type="submit"
-                  >
-                    +
-                </Button>
-                </ButtonGroup>
-              </form>
-              <p> Task: </p>
+              <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paper}>
+                <InputBase
+                  placeholder="Todo..."
+                  className={classes.input}
+                  inputRef={register}
+                  type="text"
+                  name="task"
+                />
+                <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
+                  <AddIcon />
+                </IconButton>
+              </Paper>
+              <p> Tasks: </p>
               <>
-                {props.regsTodo.data.map((regTodo) => {
-                  return (
-                    <ul>
-                      <li key={regTodo._id}>
-                        <label> {regTodo.task}</label>
-                        <span>X</span>
-                      </li>
-                    </ul>
-                  )
-                })
-                }
+                <List className={classes.list}>
+                  {props.regsTodo.data.map((regTodo) => {
+                    const labelId = `checkbox-list-label-${regTodo._id}`;
+                    return (
+                      <ListItem divider key={regTodo._id} role={undefined} dense button onClick={handleToggle(regTodo._id)}>
+                        <ListItemIcon color="inherit">
+                          <Checkbox
+                            edge="start"
+                            checked={checked.indexOf(regTodo._id) !== -1}
+                            tabIndex={-1}
+                            disableRipple
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText style={{ textDecoration: checked.indexOf(regTodo._id) !== -1 ? "line-through" : "" }} id={labelId} primary={regTodo.task} />
+                        <ListItemSecondaryAction>
+                          <IconButton onClick={handleDelete(regTodo._id)} color="inherit" size="small" edge="end" aria-label="delete">
+                            <DeleteForeverIcon size="small" />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    )
+                  })
+                  }
+                </List>
               </>
-              {/* <>
-                {todos.map((todo) => {
-                  return (
-                    <ul>
-                      <li key={todo.id}>
-                        <label style={{ textDecoration: todo.complete === true ? "line-through" : "" }} ><input type="checkbox" onChange={() => handleCompleteTodo(todo.id)} /> {todo.title}</label>
-                        <span>X</span>
-                      </li>
-                    </ul>
-                  )
-                })
-                }
-              </> */}
-              <p> Your Complete Tasks: </p>
-
             </Box>
           </>}
           <footer className={classes.footer}>
@@ -140,12 +182,19 @@ export default function Home(props) {
 }
 
 //pegar dados do nosso banco de dados... por padrão GET
-export async function getServerSideProps() {
-  const regsTodo = await fetch('https://todos-swart.vercel.app/api/todo').then(res => res.json())
+export async function getStaticProps() {
+  const res = await fetch('https://todos-swart.vercel.app/api/todo')
+  const regsTodo = await res.json()
 
   return {
     props: {
       regsTodo,
-    }
+    },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
   }
 }
+
+export default Home

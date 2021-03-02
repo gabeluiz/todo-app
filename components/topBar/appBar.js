@@ -51,7 +51,7 @@ export default function MenuAppBar() {
   };
 
   return (
-      <AppBar color='secondary' className={classes.appBar}>
+      <AppBar color='primary' className={classes.appBar}>
         <Toolbar>
           <IconButton onClick={handleDrawer} edge="start" color="inherit" aria-label="menu">
             <MenuIcon />
@@ -61,7 +61,7 @@ export default function MenuAppBar() {
             <Button
               startIcon={<AccountCircle />}
               variant="outlined"
-              color="primary"
+              color="inherit"
               onClick={() => signIn('google')}
             >
               Login
