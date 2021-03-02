@@ -9,7 +9,6 @@ import Link from '../components/Link';
 import Copyright from '../components/Copyright';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
-import todo from '../pages/api/todo';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -46,7 +45,7 @@ export default function Home(props) {
 
   const onSubmit = async (data, e) => {
     console.log(data)
-    const res = await fetch("https://todos-swart.vercel.app/api/todo", {
+    const res = await fetch('https://todos-swart.vercel.app/api/todo', {
       method: "post",
       body: JSON.stringify(data)
     })
@@ -100,7 +99,7 @@ export default function Home(props) {
               </form>
               <p> Task: </p>
               <>
-                {props.regsTodo.map((regTodo) => {
+                {props.regsTodo.data.map((regTodo) => {
                   return (
                     <ul>
                       <li key={regTodo._id}>
@@ -141,13 +140,12 @@ export default function Home(props) {
 }
 
 //pegar dados do nosso banco de dados... por padrão GET
-export async function getStaticProps() {
-  const regsTodo = await todo.then(res => res.json())
+export async function getServerSideProps() {
+  const regsTodo = await fetch('https://todos-swart.vercel.app/api/todo').then(res => res.json())
 
   return {
     props: {
       regsTodo,
-    },
-    revalidate: 1,
+    }
   }
 }

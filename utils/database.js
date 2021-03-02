@@ -1,21 +1,15 @@
-import { MongoClient } from 'mongodb';
-import nextConnect from 'next-connect';
+import { MongoClient } from "mongodb";
 
 const { MONGODB_URI, MONGODB_DB } = process.env
+let cachedDb = null;
 
-const client = new MongoClient(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+export async function connectToDatabase() {
+  if (cachedDb) {
+    return cachedDb;
+  }
+  const client = await MongoClient.connect(MONGODB_URI, { useNewUrlParser: true });
+  const db = await client.db(MONGODB_DB);
 
-async function database(req, res, next) {
-    if (!client.isConnected()) await client.connect();
-    req.dbClient = client;
-    req.db = client.db(MONGODB_DB);
-    return next();
+  cachedDb = db;
+  return db;
 }
-
-const bancoDados = nextConnect();
-bancoDados.use(database);
-
-export default bancoDados;
