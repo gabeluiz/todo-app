@@ -23,6 +23,9 @@ export default async function handler(req, res) {
             data = JSON.parse(data);
             data.dt_inclusao = new Date(data.date);
             data.situacao = 'A';
+
+            console.log(data.complete);
+
             if (!data._id) {
                 data._id = new ObjectID();
             }
