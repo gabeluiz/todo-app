@@ -22,6 +22,14 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1
   },
+  menu: {
+    "& .MuiPaper-root": {
+      backgroundColor: theme.palette.primary.main,
+    }
+  },
+  menuItem: {
+    fontSize:12,
+  },
 
 }));
 
@@ -93,8 +101,9 @@ export default function MenuAppBar() {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Fade}
+                className={classes.menu}
               >
-                <MenuItem>
+                <MenuItem className={classes.menuItem}>
                   <ListItemIcon>
                     <Avatar />
                   </ListItemIcon>
@@ -105,9 +114,9 @@ export default function MenuAppBar() {
                   </Typography>
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+                <MenuItem className={classes.menuItem} onClick={handleClose}>Profile</MenuItem>
+                <MenuItem className={classes.menuItem} onClick={handleClose}>My account</MenuItem>
+                <MenuItem className={classes.menuItem} onClick={() => signOut()}>Logout</MenuItem>
               </Menu>
             </div>
           )}

@@ -160,8 +160,6 @@ function Home(props) {
                 </IconButton>
               </Paper>
               {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
-
-              <p> Tasks: </p>
               <>
                 <List className={classes.list}>
                   {data.data.map((regTodo) => {
