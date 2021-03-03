@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Home(props) {
-  
+
 
   const [session, loading] = useSession();
   const classes = useStyles();
@@ -77,14 +77,14 @@ function Home(props) {
   const [checked, setChecked] = React.useState([0]);
 
   const fetchData = async () => {
-      const req = await fetch('https://todos-swart.vercel.app/api/todo');
-      const newData = await req.json();
-      return setData(newData);
+    const req = await fetch('http://localhost:3000/api/todo');
+    const newData = await req.json();
+    return setData(newData);
   };
 
   const onSubmit = async (data, e) => {
-    
-    const res = fetch('https://todos-swart.vercel.app/api/todo', {
+
+    const res = fetch('http://localhost:3000/api/todo', {
       method: "post",
       body: JSON.stringify(data)
     })
@@ -113,17 +113,18 @@ function Home(props) {
 
   const handleDelete = (_id) => () => {
 
-    const res = fetch('https://todos-swart.vercel.app/api/todo', {
+    const res = fetch('http://localhost:3000/api/todo', {
       method: "delete",
       body: JSON.stringify(_id)
     })
+
+    fetchData();
 
     toast.promise(res, {
       loading: 'Loading',
       success: 'Delete',
       error: 'Error when fetching',
     })
-    fetchData();
   }
 
   return (
@@ -135,9 +136,10 @@ function Home(props) {
         {/* nesse box abaixo usar o my and pt de cima para ficar justificado */}
         <Box pt={12} >
           {!session && <>
-            <Typography align="center" color="text" variant="h3" component="h1" gutterBottom>
-              To-do list, do and gain productivity and organization <br />
-              Please login to see your todos
+            <Typography align="left" color="text" variant="h3" component="h1" gutterBottom>
+              Simple like that. <br />
+              Just to do list. <br />
+              Do your day.
             </Typography>
           </>}
           {session && <>
@@ -158,7 +160,7 @@ function Home(props) {
                 </IconButton>
               </Paper>
               {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
-              
+
               <p> Tasks: </p>
               <>
                 <List className={classes.list}>
@@ -202,7 +204,7 @@ function Home(props) {
 
 //pegar dados do nosso banco de dados... por padrão GET
 export async function getServerSideProps() {
-  const res = await fetch('https://todos-swart.vercel.app/api/todo')
+  const res = await fetch('http://localhost:3000/api/todo')
   const regsTodo = await res.json()
 
   return {
