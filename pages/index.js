@@ -138,7 +138,7 @@ function Home(props) {
           {!session && <>
             <Typography align="left" color="text" variant="h3" component="h1" gutterBottom>
               Simple like that. <br />
-              Just to do list. <br />
+              Just to do it. <br />
               Do your day.
             </Typography>
           </>}
