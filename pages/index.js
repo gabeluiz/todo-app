@@ -77,14 +77,14 @@ function Home(props) {
   const [checked, setChecked] = React.useState([0]);
 
   const fetchData = async () => {
-    const req = await fetch('http://localhost:3000/api/todo');
+    const req = await fetch('https://todos-swart.vercel.app/api/todo');
     const newData = await req.json();
     return setData(newData);
   };
 
   const onSubmit = async (data, e) => {
 
-    const res = fetch('http://localhost:3000/api/todo', {
+    const res = fetch('https://todos-swart.vercel.app/api/todo', {
       method: "post",
       body: JSON.stringify(data)
     })
@@ -113,7 +113,7 @@ function Home(props) {
 
   const handleDelete = (_id) => () => {
 
-    const res = fetch('http://localhost:3000/api/todo', {
+    const res = fetch('https://todos-swart.vercel.app/api/todo', {
       method: "delete",
       body: JSON.stringify(_id)
     })
@@ -204,7 +204,7 @@ function Home(props) {
 
 //pegar dados do nosso banco de dados... por padrão GET
 export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/todo')
+  const res = await fetch('https://todos-swart.vercel.app/api/todo')
   const regsTodo = await res.json()
 
   return {
