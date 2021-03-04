@@ -91,6 +91,10 @@ const useStyles = makeStyles((theme) => ({
   card: {
     backgroundColor:theme.palette.background.default,
     boxShadow: '3px 3px 4px 0 rgba(0, 0, 0, 0.25) inset, -2px -2px 3px 0 rgba(255, 255, 255, 0.3) inset',
+  },
+  card1: {
+    backgroundColor:theme.palette.background.default,
+    boxShadow: '3px 3px 4px 0 rgba(0, 0, 0, 0.25), -2px -2px 3px 0 rgba(255, 255, 255, 0.3)',
   }
 }));
 
@@ -167,6 +171,51 @@ function Home() {
           </Typography>
         </>}
         {session && <>
+          <Card className={classes.card1}>
+            <CardContent>
+            <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paper}>
+              <InputBase
+                placeholder="Task..."
+                className={classes.input}
+                inputRef={register({ required: "Task is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+                type="text"
+                name="task"
+                inputProps={{
+                  maxLength: 200,
+                }}
+              />
+              <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
+                <AddIcon />
+              </IconButton>
+            </Paper>
+            {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
+            <List className={classes.list}>
+              {data.data.map((regTodo) => {
+                const labelId = `checkbox-list-label-${regTodo._id}`;
+                return (
+                  <ListItem divider key={regTodo._id} role={undefined} dense button onClick={handleToggle(regTodo._id)}>
+                    <ListItemIcon color="inherit">
+                      <Checkbox
+                        edge="start"
+                        checked={checked.indexOf(regTodo._id) !== -1}
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': labelId }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText style={{ textDecoration: checked.indexOf(regTodo._id) !== -1 ? "line-through" : "" }} id={labelId} primary={regTodo.task} />
+                    <ListItemSecondaryAction>
+                      <IconButton onClick={handleDelete(regTodo._id)} color="inherit" size="small" edge="end" aria-label="delete">
+                        <DeleteForeverIcon size="small" />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                )
+              })
+              }
+            </List>
+            </CardContent>
+          </Card>
           <Card className={classes.card}>
             <CardContent>
             <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paper}>
