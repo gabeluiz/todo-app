@@ -29,7 +29,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import AddIcon from '@material-ui/icons/Add';
 import useFetch from '../hooks/useFetch';
 
-const urlProd = "https://todos-589b2engc-gabeluiz.vercel.app/api/todo";
+const urlProd = "https://todos-swart.vercel.app/api/todo";
 const urlDev = 'http://localhost:3000/api/todo';
 
 const useStyles = makeStyles((theme) => ({
