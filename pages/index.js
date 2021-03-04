@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     backgroundColor:theme.palette.background.default,
-    boxShadow: '6px 6px 8px 0 rgba(0, 0, 0, 0.25) inset, -4px -4px 6px 0 rgba(255, 255, 255, 0.3) inset',
+    boxShadow: '3px 3px 4px 0 rgba(0, 0, 0, 0.25) inset, -2px -2px 3px 0 rgba(255, 255, 255, 0.3) inset',
   }
 }));
 
