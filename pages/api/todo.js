@@ -7,12 +7,10 @@ export default async function handler(req, res) {
 
     let db = await connectToDatabase();
 
-    // situacao A = ATIVO / E = EXCLUIDO
-
     switch (method) {
         case 'GET':
             try {
-                const todos = await db.collection('todos').find({situacao : 'A'}).toArray(); /* find all the data in our database */
+                const todos = await db.collection('todos').find({}).toArray(); /* find all the data in our database */
                 res.status(200).json({ success: true, data: todos })
             } catch (error) {
                 res.status(400).json({ success: false })
@@ -22,9 +20,6 @@ export default async function handler(req, res) {
             let data = req.body;
             data = JSON.parse(data);
             data.dt_inclusao = new Date(data.date);
-            data.situacao = 'A';
-
-            console.log(data.complete);
 
             if (!data._id) {
                 data._id = new ObjectID();
@@ -39,7 +34,7 @@ export default async function handler(req, res) {
             let id = req.body;
             id = JSON.parse(id);
             
-            let del = await db.collection('todos').updateOne({ _id: new ObjectID(id) }, { $set: {situacao : 'E'} });
+            let del = await db.collection('todos').deleteOne({ _id: new ObjectID(id) });
             res.json({ message: "ok" });
             break
         default:

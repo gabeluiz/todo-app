@@ -14,6 +14,7 @@ import Divider from '@material-ui/core/Divider';
 import Fade from '@material-ui/core/Fade';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import InvertColorsIcon from '@material-ui/icons/InvertColors';
 
 const useStyles = makeStyles((theme) => ({
  appBar: {
@@ -29,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
   },
   menuItem: {
     fontSize:12,
+  },
+  title: {
+    flexGrow: 1,
   },
 
 }));
@@ -61,9 +65,15 @@ export default function MenuAppBar() {
   return (
       <AppBar color='primary' className={classes.appBar}>
         <Toolbar>
-          <IconButton onClick={handleDrawer} edge="start" color="inherit" aria-label="menu">
+          {/* <IconButton onClick={handleDrawer} edge="start" color="inherit" aria-label="menu">
             <MenuIcon />
+          </IconButton> */}
+          <IconButton edge="start" color="inherit" aria-label="menu">
+            <InvertColorsIcon />
           </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            ToDo-List
+          </Typography>
           <div className={classes.grow} />
           {!session && <> {' '}
             <Button
