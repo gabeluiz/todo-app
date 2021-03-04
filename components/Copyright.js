@@ -4,7 +4,7 @@ import MuiLink from '@material-ui/core/Link';
 
 export default function Copyright() {
   return (
-    <Typography variant="caption" display="block" color="text" align="center" gutterBottom>
+    <Typography variant="caption" display="block" color="inherit" align="center" gutterBottom>
       {'Powered by '}
       <MuiLink color="inherit" target="_blank" href="https://www.linkedin.com/in/rodrigo-manozzo-715a8273/">
         Rodrigo Manozzo

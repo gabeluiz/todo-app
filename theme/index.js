@@ -22,7 +22,7 @@ const theme = createMuiTheme({
       contrastText: '#fff',
     },
     background: {
-      default: '#333',
+      default: '#303030',
     },
     text: {
       primary: '#fff',
@@ -43,6 +43,16 @@ const theme = createMuiTheme({
       'sans-serif',
     ].join(','),
   },
+  overrides: {
+    MuiListItem: {
+      root: {
+        "&$selected": { color:'#616161', }
+      }
+    },
+    '&:hover:before': {
+      backgroundColor: 'rgba(0, 0, 0, 0.42)'
+    }
+  }
 });
 
 export default theme;

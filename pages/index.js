@@ -1,11 +1,8 @@
-import React, {
-  useState,
-  useEffect
-} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { useSession } from 'next-auth/client';
 import AppBar from '../components/topBar/appBar.js';
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '../components/navBar/drawer.js';
 import {
   Box,
   InputBase,
@@ -20,7 +17,6 @@ import {
   Paper,
   FormHelperText
 } from '@material-ui/core';
-import Container from '@material-ui/core/Container';
 import Copyright from '../components/Copyright';
 import { useForm } from 'react-hook-form';
 import toast,
@@ -32,11 +28,9 @@ import useFetch from '../hooks/useFetch';
 const urlProd = "https://todos-swart.vercel.app/api/todo";
 const urlDev = 'http://localhost:3000/api/todo';
 
+const drawerWidth = 240;
+
 const useStyles = makeStyles((theme) => ({
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
   root: {
     height: '100vh',
   },
@@ -79,11 +73,22 @@ const useStyles = makeStyles((theme) => ({
   },
   helptext: {
     color: theme.palette.error.light,
+  },
+  content: {
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  toolbar: theme.mixins.toolbar,
+  drawerPaper: {
+    width: drawerWidth
   }
 }));
 
 function Home() {
-
 
   const [session, loading] = useSession();
   const classes = useStyles();
@@ -137,79 +142,73 @@ function Home() {
 
   if (!data) {
     return <Box display="flex" pt={12} justifyContent="center">
-      <Typography align="left" color="text" variant="h3" component="h1" gutterBottom>
+      <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
         Loading.... <br />
       </Typography>
     </Box>
   }
 
   return (
-    <Container>
+    <div className={classes.root}>
       <AppBar />
-      {/* para usar drawer lateral, ideal box display flex, para ficar side by side com o drawer */}
-      <Box pt={12} display="flex" justifyContent="center">
-        {/* <Drawer /> */}
-        {/* nesse box abaixo usar o my and pt de cima para ficar justificado */}
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
         {!session && <>
-          <Typography align="left" color="text" variant="h3" component="h1" gutterBottom>
+          <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
             Simple like that. <br />
               Just to do it. <br />
               Do your day.
-            </Typography>
+          </Typography>
         </>}
         {session && <>
-          <Box width="100%">
-            <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paper}>
-              <InputBase
-                placeholder="Task..."
-                className={classes.input}
-                inputRef={register({ required: "Task is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
-                type="text"
-                name="task"
-                inputProps={{
-                  maxLength: 200,
-                }}
-              />
-              <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
-                <AddIcon />
-              </IconButton>
-            </Paper>
-            {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
-            <>
-              <List className={classes.list}>
-                {data.data.map((regTodo) => {
-                  const labelId = `checkbox-list-label-${regTodo._id}`;
-                  return (
-                    <ListItem divider key={regTodo._id} role={undefined} dense button onClick={handleToggle(regTodo._id)}>
-                      <ListItemIcon color="inherit">
-                        <Checkbox
-                          edge="start"
-                          checked={checked.indexOf(regTodo._id) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText style={{ textDecoration: checked.indexOf(regTodo._id) !== -1 ? "line-through" : "" }} id={labelId} primary={regTodo.task} />
-                      <ListItemSecondaryAction>
-                        <IconButton onClick={handleDelete(regTodo._id)} color="inherit" size="small" edge="end" aria-label="delete">
-                          <DeleteForeverIcon size="small" />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  )
-                })
-                }
-              </List>
-            </>
-          </Box>
+          <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paper}>
+            <InputBase
+              placeholder="Task..."
+              className={classes.input}
+              inputRef={register({ required: "Task is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+              type="text"
+              name="task"
+              inputProps={{
+                maxLength: 200,
+              }}
+            />
+            <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
+              <AddIcon />
+            </IconButton>
+          </Paper>
+          {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
+          <List className={classes.list}>
+            {data.data.map((regTodo) => {
+              const labelId = `checkbox-list-label-${regTodo._id}`;
+              return (
+                <ListItem divider key={regTodo._id} role={undefined} dense button onClick={handleToggle(regTodo._id)}>
+                  <ListItemIcon color="inherit">
+                    <Checkbox
+                      edge="start"
+                      checked={checked.indexOf(regTodo._id) !== -1}
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{ 'aria-labelledby': labelId }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText style={{ textDecoration: checked.indexOf(regTodo._id) !== -1 ? "line-through" : "" }} id={labelId} primary={regTodo.task} />
+                  <ListItemSecondaryAction>
+                    <IconButton onClick={handleDelete(regTodo._id)} color="inherit" size="small" edge="end" aria-label="delete">
+                      <DeleteForeverIcon size="small" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              )
+            })
+            }
+          </List>
         </>}
         <footer className={classes.footer}>
           <Copyright />
         </footer>
-      </Box>
-      <Toaster />
-    </Container>
+        <Toaster />
+      </main>
+    </div>
 
   )
 }
