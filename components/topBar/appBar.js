@@ -95,19 +95,9 @@ export default function MenuAppBar() {
   const drawer = (
     <div>
       <List>
-        <Link href="/" passHref>
+        <Link href="/" passHref shallow>
           <ListItem selected={router.pathname == "/" ? true : false} button component="a" >
             <ListItemText>My tasks To Do</ListItemText>
-          </ListItem>
-        </Link>
-        <Link href="/list" passHref>
-          <ListItem selected={router.pathname == "/list" ? true : false} button component="a" >
-            <ListItemText>Lists</ListItemText>
-          </ListItem>
-        </Link>
-        <Link href="/team" passHref>
-          <ListItem selected={router.pathname == "/team" ? true : false} button component="a" >
-            <ListItemText>Team</ListItemText>
           </ListItem>
         </Link>
       </List>
