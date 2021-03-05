@@ -196,9 +196,13 @@ function Home() {
           </Typography>
         </>}
         {session && <>
-          <Grid container spacing={3}>
-            <Grid item xs={3}></Grid>
-            <Grid item xs={6}>
+          <Grid
+            container
+            spacing={3}
+            direction="row"
+            justify="center"
+            alignItems="center">
+            <Grid item xs={12} sm={6}>
               <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paper}>
                 <InputBase
                   placeholder="Task..."
@@ -216,8 +220,9 @@ function Home() {
               </Paper>
               {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
             </Grid>
-            <Grid item xs={3}></Grid>
-            <Grid item xs={6}>
+          </Grid>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
               <Card className={classes.card}>
                 <CardContent>
                   <DragDropContext onDragEnd={handleOnDragEnd}>
