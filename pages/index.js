@@ -118,7 +118,7 @@ function Home() {
     })
     e.target.reset();
     setTimeout(function () {
-      mutate(data)
+      mutate(characters)
     }.bind(this), 100)
   }
 
@@ -145,7 +145,7 @@ function Home() {
       error: 'Error when fetching',
     })
     setTimeout(function () {
-      mutate(data)
+      mutate(characters)
     }.bind(this), 100)
   }
 
