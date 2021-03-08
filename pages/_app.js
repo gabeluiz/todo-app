@@ -8,6 +8,7 @@ import { Provider } from 'next-auth/client';
 
 export default function MyApp(props) {
   const { Component, pageProps } = props;
+  const [light, setLight] = React.useState(true);
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.

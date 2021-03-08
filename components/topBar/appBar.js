@@ -22,6 +22,7 @@ import Avatar from './avatar.js';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import Link from 'next/link';
 import { useRouter } from "next/router";
 
@@ -30,14 +31,10 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
+    border:'none',
   },
   grow: {
     flexGrow: 1
-  },
-  menu: {
-    "& .MuiPaper-root": {
-      backgroundColor: theme.palette.primary.main,
-    }
   },
   menuItem: {
     fontSize: 12,
@@ -56,12 +53,11 @@ const useStyles = makeStyles((theme) => ({
       width: drawerWidth,
       flexShrink: 0,
     },
-
   },
   toolbar: theme.mixins.toolbar,
   drawerPaper: {
     width: drawerWidth,
-    backgroundColor: theme.palette.background.default,
+    border:'none',
   },
   closeMenuButton: {
     marginRight: 'auto',
@@ -90,14 +86,13 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
-  
-
   const drawer = (
     <div>
       <List>
         <Link href="/" passHref shallow>
-          <ListItem selected={router.pathname == "/" ? true : false} button component="a" >
-            <ListItemText>My tasks To Do</ListItemText>
+          <ListItem className={classes.listItem} selected={router.pathname == "/" ? true : false} button component="a" >
+            <ListItemIcon style={{color:"#FFF"}}><FormatListBulletedIcon /></ListItemIcon>
+            <ListItemText style={{color:"#FFF"}}>My tasks</ListItemText>
           </ListItem>
         </Link>
       </List>
@@ -106,7 +101,7 @@ export default function MenuAppBar() {
 
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar}>
+      <AppBar elevation={0} position="fixed" className={classes.appBar}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -118,7 +113,7 @@ export default function MenuAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            ToDo-List
+            ToDo List
           </Typography>
           <div className={classes.grow} />
           {!session && <> {' '}
@@ -194,7 +189,7 @@ export default function MenuAppBar() {
               }}
             >
               <IconButton onClick={handleDrawerToggle} className={classes.closeMenuButton}>
-                <CloseIcon />
+                <CloseIcon color="inherit"/>
               </IconButton>
               {drawer}
             </Drawer>

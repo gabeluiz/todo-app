@@ -11,7 +11,7 @@ const theme = createMuiTheme({
     },
     secondary: {
       light: '#7986cb',
-      main: '#3f51b5',
+      main: '#4285F4',
       dark: '#303f9f',
       contrastText: '#fff',
     },
@@ -22,10 +22,15 @@ const theme = createMuiTheme({
       contrastText: '#fff',
     },
     background: {
-      default: '#303030',
+      paper: '#303030',
+      default: '#282828',
     },
     text: {
       primary: '#fff',
+    },
+    action: {
+      hover:'rgba(255, 255, 255, 0.08)',
+      selected:'rgba(255, 255, 255, 0.03)',
     }
   },
   breakpoints: {
