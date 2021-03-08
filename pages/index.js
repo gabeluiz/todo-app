@@ -141,7 +141,7 @@ function Home() {
 
   //# INCLUIR TASK
   const onSubmit = async (dados, e) => {
-    const res = fetch(urlDev, {
+    const res = fetch(urlProd, {
       method: "POST",
       body: JSON.stringify(dados)
     })
@@ -166,7 +166,7 @@ function Home() {
     setChecked(newChecked);
 
 
-    const res = fetch(urlDev, {
+    const res = fetch(urlProd, {
       method: "POST",
       body: JSON.stringify(dados)
     })
@@ -178,7 +178,7 @@ function Home() {
 
   //# DELETAR TASK
   const handleDelete = (_id) => () => {
-    const res = fetch(urlDev, {
+    const res = fetch(urlProd, {
       method: "DELETE",
       body: JSON.stringify(_id)
     })
@@ -226,7 +226,7 @@ function Home() {
 
     const dados = { _id: draggableId, order: destination.index + 1 }
 
-    const res = fetch(urlDev, {
+    const res = fetch(urlProd, {
       method: "POST",
       body: JSON.stringify(dados)
     })
