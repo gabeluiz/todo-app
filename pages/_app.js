@@ -1,16 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useEffect } from 'react'
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from '../theme';
 import { Provider } from 'next-auth/client';
+import {APP_NAME} from '../lib/constants';
 
-export default function MyApp(props) {
-  const { Component, pageProps } = props;
-  const [light, setLight] = React.useState(true);
-
-  React.useEffect(() => {
+export default function MyApp({Component, pageProps}) {
+  
+  useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
     if (jssStyles) {
@@ -21,7 +20,7 @@ export default function MyApp(props) {
   return (
     <React.Fragment>
       <Head>
-        <title>My Todo List</title>
+        <title>{APP_NAME}</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
       <Provider session={pageProps.session}>
@@ -35,8 +34,3 @@ export default function MyApp(props) {
     </React.Fragment>
   );
 }
-
-MyApp.propTypes = {
-  Component: PropTypes.elementType.isRequired,
-  pageProps: PropTypes.object.isRequired,
-};

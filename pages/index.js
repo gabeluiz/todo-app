@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/client';
-import AppBar from '../components/topBar/appBar.js';
+import AppBar from '../components/appBar.js';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Box,
-  InputBase,
   Typography,
   ListItem,
   ListItemIcon,
@@ -13,45 +11,26 @@ import {
   ListItemText,
   IconButton,
   List,
-  Paper,
-  FormHelperText,
   Card,
   CardContent,
   Grid,
   Tooltip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from '@material-ui/core';
-import Copyright from '../components/Copyright';
-import { useForm } from 'react-hook-form';
+import Copyright from '../components/copyright';
 import toast,
 { Toaster } from 'react-hot-toast';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import AddIcon from '@material-ui/icons/Add';
 import useFetch from '../hooks/useFetch';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import DoneIcon from '@material-ui/icons/Done';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
-//links da api de produção e desenvolvimento
-const urlProd = "https://todos-swart.vercel.app/api/todo";
-const urlDev = 'http://localhost:3000/api/todo';
-
-const drawerWidth = 240;
+import { URL_API_ITEM } from '../lib/constants';
+import Container from '../components/container';
+import Toolbar from '../components/toolbar';
+import InputItem from '../components/input-item.js';
+import Layout from '../components/layout.js';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100vh',
-  },
-  footer: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginBottom: 0,
-  },
   list: {
     width: '100%',
     maxWidth: '100%',
@@ -68,35 +47,8 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#616161',
     }
   },
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1,
-  },
   iconButton: {
     padding: 10,
-  },
-  paperInput: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    border: 'none',
-    boxShadow: 'rgba(0, 0, 0, 0.3) 0 1px 3px',
-  },
-  helptext: {
-    color: theme.palette.error.light,
-  },
-  content: {
-    [theme.breakpoints.up('sm')]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
-    },
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  toolbar: theme.mixins.toolbar,
-  drawerPaper: {
-    width: drawerWidth
   },
   card: {
     border: 'none',
@@ -114,12 +66,12 @@ const useStyles = makeStyles((theme) => ({
 
 function Home() {
 
-  const { data, mutate } = useFetch('/api/todo');
+  const { data, mutate } = useFetch('/api/list');
   const [session, loading] = useSession();
   const classes = useStyles();
-  const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
-  const [checked, setChecked] = React.useState([]);
-  const [characters, updateCharacters] = React.useState(data);
+  const [checked, setChecked] = useState([]);
+  const [characters, updateCharacters] = useState(data);
+
 
   //# NOTIFICAÇÃO
   function messagePromise(fetch) {
@@ -139,19 +91,6 @@ function Home() {
     )
   }
 
-  //# INCLUIR TASK
-  const onSubmit = async (dados, e) => {
-    const res = fetch(urlProd, {
-      method: "POST",
-      body: JSON.stringify(dados)
-    })
-    messagePromise(res);
-    e.target.reset();
-    setTimeout(function () {
-      mutate(data)
-    }.bind(this), 100)
-  }
-
   //# CHECKAR TASK
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -166,7 +105,7 @@ function Home() {
     setChecked(newChecked);
 
 
-    const res = fetch(urlProd, {
+    const res = fetch(URL_API_ITEM, {
       method: "POST",
       body: JSON.stringify(dados)
     })
@@ -178,7 +117,7 @@ function Home() {
 
   //# DELETAR TASK
   const handleDelete = (_id) => () => {
-    const res = fetch(urlProd, {
+    const res = fetch(URL_API_ITEM, {
       method: "DELETE",
       body: JSON.stringify(_id)
     })
@@ -188,23 +127,21 @@ function Home() {
     }.bind(this), 100)
   }
 
-  //LOADING COM PRÉ DATA CASO NÃO CARREGUE OS DADOS DA API
-  if (!data) {
-    return <Box display="flex" pt={12} justifyContent="center">
-      <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
-        Loading.... <br />
-      </Typography>
-    </Box>
-  } else if (!data.success) {
-    return <Box display="flex" pt={12} justifyContent="center">
-      <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
-        Something went wrong, try again later...<br />
-      </Typography>
-    </Box>
-  }
 
-  //grava um array com todos os completos
-  const completed = data.data.filter(item => item.complete === true)
+  // //LOADING COM PRÉ DATA CASO NÃO CARREGUE OS DADOS DA API
+  // if (!data) {
+  //   return <Box display="flex" pt={12} justifyContent="center">
+  //     <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
+  //       Loading...
+  //     </Typography>
+  //   </Box>
+  // } else if (!data.success) {
+  //   return <Box display="flex" pt={12} justifyContent="center">
+  //     <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
+  //       Something went wrong, try again later...
+  //     </Typography>
+  //   </Box>
+  // }
 
   function handleOnDragEnd(result) {
     const { destination, source, draggableId } = result;
@@ -226,23 +163,19 @@ function Home() {
 
     const dados = { _id: draggableId, order: destination.index + 1 }
 
-    const res = fetch(urlProd, {
+    const res = fetch(URL_API_ITEM, {
       method: "POST",
       body: JSON.stringify(dados)
     })
 
   }
 
-  // USAR ARRAY CHARACTERS ATUALIZADO COM O ARRAY DATA VINDO DA API
-  if (!characters) {
-    updateCharacters(data);
-  }
 
   return (
-    <div className={classes.root}>
+    <Layout>
       <AppBar />
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
+      <Container>
+        <Toolbar/>
         {!session && <>
           <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
             Simple like that. <br />
@@ -251,36 +184,26 @@ function Home() {
           </Typography>
         </>}
         {session && <>
-          <Grid
-            container
-            spacing={3}
-            direction="row"
-            justify="center"
-            alignItems="center">
-            <Grid item xs={12} sm={6}>
-              <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
-                <InputBase
-                  placeholder="Add a task..."
-                  className={classes.input}
-                  inputRef={register({ required: "Task is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
-                  type="text"
-                  name="task"
-                  inputProps={{
-                    maxLength: 200,
-                  }}
-                />
-                <Tooltip title="Add">
-                  <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
-                    <AddIcon />
-                  </IconButton>
-                </Tooltip>
-              </Paper>
-              {errors.task && <FormHelperText className={classes.helptext}>{errors.task.message}</FormHelperText>}
-            </Grid>
-          </Grid>
-
+          <InputItem />
           {(() => {
-            if (data.data.length !== 0) {
+            if (data?.data.length === 0) {
+
+              return (
+                <Grid
+                  container
+                  spacing={0}
+                  direction="column"
+                  justify="center"
+                  alignItems="center"
+                  style={{ minHeight: '50vh' }}
+                >
+                  <Grid item xs={12} sm={6}>
+                    <Typography align="left" variant="h6" component="h6">You don't have any item yet...</Typography>
+                  </Grid>
+                </Grid>
+              )
+
+            } else {
               return (
                 <Grid
                   container
@@ -299,7 +222,7 @@ function Home() {
                                 ref={provided.innerRef}
                               >
                                 <List className={classes.list}>
-                                  {data.data.map(({ _id, task, complete }, index) => {
+                                  {data?.data.map(({ _id, task, complete }, index) => {
                                     if (!complete)
                                       return (
                                         <Draggable key={_id} draggableId={_id} index={index}>
@@ -342,7 +265,7 @@ function Home() {
                           </Droppable>
                         </DragDropContext>
 
-                        {(() => {
+                        {/* {(() => {
                           if (completed.length !== 0) {
                             return (
                               <Accordion className={classes.accordion}>
@@ -385,39 +308,20 @@ function Home() {
                               </Accordion>
                             )
                           }
-                        })()}
+                        })()} */}
                       </CardContent>
                     </Card>
-                  </Grid>
-                </Grid>
-              )
-            } else {
-              return (
-
-                <Grid
-                  container
-                  spacing={0}
-                  direction="column"
-                  justify="center"
-                  alignItems="center"
-                  style={{ minHeight: '50vh' }}
-                >
-                  <Grid item xs={12} sm={6}>
-                    <Typography align="left" variant="h6" component="h6">You don't have any task yet...</Typography>
                   </Grid>
                 </Grid>
               )
             }
           })()}
         </>}
-        <footer className={classes.footer}>
-          <Copyright />
-        </footer>
+        <Copyright />
         <Toaster />
-      </main>
-    </div>
-
+      </Container>
+    </Layout>
   )
 }
 
-export default Home
+export default Home;
