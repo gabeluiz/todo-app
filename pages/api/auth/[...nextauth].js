@@ -17,18 +17,18 @@ export default NextAuth({
   jwt:{
     secret:process.env.JWT_SECRET,
   },
-  callbacks: {
-    /**
-     * @param  {string} url      URL provided as callback URL by the client
-     * @param  {string} baseUrl  Default base URL of site (can be used as fallback)
-     * @return {string}          URL the client will be redirect to
-     */
-    redirect: async (url, baseUrl) => {
-      return url.startsWith(baseUrl)
-        ? Promise.resolve(url)
-        : Promise.resolve(baseUrl)
-    }
-  }
+  // callbacks: {
+  //   /**
+  //    * @param  {string} url      URL provided as callback URL by the client
+  //    * @param  {string} baseUrl  Default base URL of site (can be used as fallback)
+  //    * @return {string}          URL the client will be redirect to
+  //    */
+  //   redirect: async (url, baseUrl) => {
+  //     return url.startsWith(baseUrl)
+  //       ? Promise.resolve(url)
+  //       : Promise.resolve(baseUrl)
+  //   }
+  // }
   
   // A database is optional, but required to persist accounts in a database
   //database: process.env.DATABASE_URL,
