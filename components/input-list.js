@@ -60,9 +60,10 @@ export default function InputItem() {
     <>
       <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
         <InputBase
+          autoFocus 
           placeholder="Add a List..."
           className={classes.input}
-          inputRef={register({ required: "Item is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+          inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
           type="text"
           name="list"
           inputProps={{

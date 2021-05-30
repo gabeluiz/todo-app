@@ -60,9 +60,10 @@ export default function InputItem({list_id}) {
       direction="row"
       justify="center"
       alignItems="center">
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={8}>
         <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
           <InputBase
+            autoFocus 
             placeholder="Add a Item..."
             className={classes.input}
             inputRef={register({ required: "Item is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}

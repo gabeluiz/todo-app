@@ -1,11 +1,8 @@
-import AppBar from '../../components/appBar';
 import { useRouter } from 'next/router';
 import useSwr from 'swr';
 import Layout from '../../components/layout';
-import Container from '../../components/container';
 import Toolbar from '../../components/toolbar';
 import { makeStyles } from '@material-ui/core/styles';
-import Copyright from '../../components/copyright';
 import InputItem from '../../components/input-item';
 import ListTask from '../../components/list-item';
 
@@ -13,7 +10,7 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 
 const useStyles = makeStyles((theme) => ({
-  
+
 }));
 
 export default function List() {
@@ -32,15 +29,10 @@ export default function List() {
 
   return (
     <Layout>
-      <AppBar />
-      <Container>
-        <Toolbar/>
-        <InputItem list_id={router.query.id}/>
-        <ListTask />
-      <Copyright />
-      </Container>  
-
-     </Layout > 
+      <Toolbar />
+      <InputItem list_id={router.query.id} />
+      <ListTask />
+    </Layout >
   )
 
 }

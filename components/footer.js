@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Copyright() {
+export default function Footer() {
   const classes = useStyles();
 
   return (
@@ -22,6 +22,9 @@ export default function Copyright() {
         {'Powered by '}
         <MuiLink color="inherit" target="_blank" href="https://www.linkedin.com/in/gabeluiz">
           Gabriel Palioqui
+        </MuiLink>{' & '}
+        <MuiLink color="inherit" target="_blank" href="https://www.linkedin.com/in/rodrigo-manozzo-715a8273">
+          Rodrigo Manozzo
         </MuiLink>{' '}
         {' - Copyright © '}
         {new Date().getFullYear()}

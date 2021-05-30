@@ -1,13 +1,12 @@
 import React from 'react';
 import InputList from './input-list';
-import { Button, Dialog } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Dialog, Typography, IconButton } from '@material-ui/core';
+import { withStyles, useTheme } from '@material-ui/core/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import AddIcon from '@material-ui/icons/Add';
 
 
 const styles = (theme) => ({
@@ -21,6 +20,11 @@ const styles = (theme) => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
+  dialog: {
+    position: 'absolute',
+    left: 10,
+    top: 50
+  }
 });
 
 const DialogTitle = withStyles(styles)((props) => {
@@ -53,6 +57,7 @@ const DialogActions = withStyles((theme) => ({
 export default function SimpleModal() {
 
   const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -63,18 +68,18 @@ export default function SimpleModal() {
   };
 
   return (
-    <div>
-      <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
-        CREATE A NEW LIST
+    <>
+      <Button startIcon={<AddIcon />} style={{margin:"20px", boxShadow:`0 0 5px ${theme.palette.primary.main}`}} variant="contained" color="primary" onClick={handleClickOpen}>
+        New List
       </Button>
       <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          CREATE A NEW LIST
+          Create a New List
         </DialogTitle>
         <DialogContent dividers>
           <InputList />
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

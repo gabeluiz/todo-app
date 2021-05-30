@@ -4,34 +4,29 @@ import { createMuiTheme } from '@material-ui/core/styles';
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: '#616161',
-      main: '#303030',
-      dark: '#212121',
-      contrastText: '#fff',
+      main: 'rgb(0, 171, 85)',
+      dark: '#007B55',
     },
     secondary: {
       light: '#7986cb',
       main: '#4285F4',
       dark: '#303f9f',
-      contrastText: '#fff',
     },
     error: {
       light: '#e57373',
       main: '#f44336',
       dark: '#d32f2f',
-      contrastText: '#fff',
     },
     background: {
-      paper: '#303030',
-      default: '#282828',
+      paper: '#212B36',
+      default: '#161C24',
     },
-    text: {
-      primary: '#fff',
+    action:{
+      hover:'#20262F',
+      selected:'rgba(0, 171, 85, 0.16)',
+      active:'rgb(0, 171, 85)',
     },
-    action: {
-      hover:'rgba(255, 255, 255, 0.08)',
-      selected:'rgba(255, 255, 255, 0.03)',
-    }
+    type:"dark",
   },
   breakpoints: {
     values: {
@@ -50,13 +45,16 @@ const theme = createMuiTheme({
   },
   overrides: {
     MuiListItem: {
-      root: {
-        "&$selected": { color:'#616161', }
-      }
+      // root: {
+      //   "&$selected": { color:'#616161', }
+      // }
     },
-    '&:hover:before': {
-      backgroundColor: 'rgba(0, 0, 0, 0.42)'
-    }
+    // '&:hover:before': {
+    //   backgroundColor: 'rgba(0, 0, 0, 0.42)'
+    // }
+  },
+  shape:{
+    borderRadius:16
   }
 });
 

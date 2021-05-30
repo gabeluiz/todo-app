@@ -164,8 +164,8 @@ export default function ListTask() {
                             alignItems="center"
                             style={{ minHeight: '50vh' }}
                         >
-                            <Grid item xs={12} sm={6}>
-                                <Typography align="left" variant="h6" component="h6">You don't have any item yet...</Typography>
+                            <Grid item xs={12} sm={8}>
+                                <Typography align="left" variant="h6" component="h6">You don't have any item for this list yet...</Typography>
                             </Grid>
                         </Grid>
                     )
@@ -178,7 +178,7 @@ export default function ListTask() {
                             direction="row"
                             justify="center"
                             alignItems="center">
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={8}>
                                 <Card className={classes.card}>
                                     <CardContent>
                                         <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -199,7 +199,7 @@ export default function ListTask() {
                                                                                     {...provided.draggableProps}
                                                                                     {...provided.dragHandleProps}
                                                                                 >
-                                                                                    <ListItem key={_id} role={undefined} dense button onClick={handleToggle(_id)}>
+                                                                                    <ListItem key={_id} role={undefined} button onClick={handleToggle(_id)}>
                                                                                         <ListItemIcon>
                                                                                             <Checkbox
                                                                                                 className={classes.checkbox}
@@ -248,7 +248,7 @@ export default function ListTask() {
                                     {data.data.map(({ _id, task, complete, order }, index) => {
                                       if (complete)
                                         return (
-                                          <ListItem key={_id} role={undefined} dense button onClick={handleToggle(_id)}>
+                                          <ListItem key={_id} role={undefined} button onClick={handleToggle(_id)}>
                                             <ListItemIcon>
                                               <Checkbox
                                                 className={classes.checkbox}

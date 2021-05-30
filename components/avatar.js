@@ -14,18 +14,18 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(3),
   },
   large: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
+    width: theme.spacing(5),
+    height: theme.spacing(5),
   },
 }));
 
-export default function ImageAvatars() {
+export default function ImageAvatar() {
   const classes = useStyles();
   const [session, loading] = useSession();
 
   return (
     <div className={classes.root}>
-      <Avatar alt="Remy Sharp" src={session.user.image} style={{ borderRadius: "50%" }} className={classes.small} />
+      <Avatar alt={session.user.name} src={session.user.image} className={classes.large} />
     </div>
   );
 }

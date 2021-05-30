@@ -4,11 +4,10 @@ import jwt from 'next-auth/jwt';
 
 const secret = process.env.JWT_SECRET;
 
-export default async function handler(req, res) {
-
+export default async (req, res) => {
 
     const token = await jwt.getToken({ req, secret });
-
+    
     if (token) {
 
         const { method } = req
@@ -19,6 +18,7 @@ export default async function handler(req, res) {
         switch (method) {
             case 'GET':
                 try {
+
                     const lists = await db.collection('lists').find({created_by_id:token.sub}).toArray();
 
                     res.status(200).json({

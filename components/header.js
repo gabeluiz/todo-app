@@ -1,5 +1,14 @@
+
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+
+//User SESSION
+import { signIn, signOut, useSession } from 'next-auth/client';
+
+import {
+  makeStyles,
+  useTheme
+} from '@material-ui/core/styles';
 import {
   Typography,
   AppBar,
@@ -13,36 +22,34 @@ import {
   ListItemIcon,
   Drawer,
   Fade,
-  Grid,
 } from '@material-ui/core/';
-import { signIn, signOut, useSession } from 'next-auth/client';
 import Avatar from './avatar.js';
-import { APP_NAME } from '../lib/constants';
-import SimpleModal from './modal';
+import NewListButton from './new-list-button';
 import useFetch from '../hooks/useFetch';
+import { useRouter } from "next/router";
 
 //ICONS
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import ListList from './list-list.js';
 
-
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+  },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    border: 'none',
-  },
-  grow: {
-    flexGrow: 1
-  },
-  menuItem: {
-    fontSize: 12,
-  },
-  title: {
-    flexGrow: 1,
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    }
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -50,49 +57,49 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
-  drawer: {
-    [theme.breakpoints.up('sm')]: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    overflow: 'auto',
-    '&::-webkit-scrollbar': {
-      width: '0.4em'
-    },
-    '&::-webkit-scrollbar-track': {
-      boxShadow: 'inset 0 0 6px #212121',
-      webkitBoxShadow: 'inset 0 0 6px #212121'
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#616161',
-    }
+  toolbar:{
+    display:'flex',
+    justifyContent:'center',
+    minHeight:theme.mixins.toolbar,
   },
-  toolbar: theme.mixins.toolbar,
   drawerPaper: {
+    width: drawerWidth,
+    backgroundColor: theme.palette.background.default
+  }, Paper: {
     width: drawerWidth,
     border: 'none',
   },
-  closeMenuButton: {
-    marginRight: 'auto',
-    marginLeft: 0,
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
   },
-  divider: {
-    margin: theme.spacing(2, 0),
+  menuItem: {
+    fontSize: 12,
+  },
+  grow: {
+    flexGrow: 1,
   },
 }));
 
-export default function MenuAppBar() {
+export default function Header(props) {
 
   const { data, mutate } = useFetch('/api/list');
   const [session, loading] = useSession();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const router = useRouter();
+  const theme = useTheme();
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  function handleDrawerToggle() {
-    setMobileOpen(!mobileOpen)
-  }
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -102,24 +109,39 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
+
+  const container = window !== undefined ? () => window().document.body : undefined;
+
+  //CENTRALIZAR DIV DE LOADING PARA FICAR BONITO
   if (!data) return <div>Loading...</div>
+
+  const getListName = () => {
+    const indexListSelected = data.data.filter(el => el._id === router.query.id);
+    return indexListSelected[0] ? indexListSelected[0].list : "";
+  }
+
+
 
   return (
     <>
-      <AppBar elevation={0} position="fixed" className={classes.appBar}>
+      <AppBar position="fixed" className={classes.appBar} color="transparent" elevation={0}>
         <Toolbar>
           <IconButton
             color="inherit"
-            aria-label="Open drawer"
+            aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
             className={classes.menuButton}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            {APP_NAME}
-          </Typography>
+          {session && (
+            <>
+              <Typography variant="h6" noWrap>
+                {getListName()}
+              </Typography>
+            </>
+          )}
           <div className={classes.grow} />
           {!session && <> {' '}
             <Button
@@ -172,18 +194,20 @@ export default function MenuAppBar() {
                 <Divider />
                 <MenuItem className={classes.menuItem} onClick={handleCloseMenu}>Profile</MenuItem>
                 <MenuItem className={classes.menuItem} onClick={handleCloseMenu}>My account</MenuItem>
-                <MenuItem className={classes.menuItem} onClick={() => signOut()}>Logout</MenuItem>
+                <MenuItem className={classes.menuItem} onClick={() => signOut({ callbackUrl: "/" })}>Logout</MenuItem>
               </Menu>
             </>
           )}
         </Toolbar>
       </AppBar>
       {session && (
-        <nav className={classes.drawer}>
+        <nav className={classes.drawer} aria-label="mailbox folders">
           {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <Hidden smUp implementation="css">
             <Drawer
+              container={container}
               variant="temporary"
+              anchor={theme.direction === 'rtl' ? 'right' : 'left'}
               open={mobileOpen}
               onClose={handleDrawerToggle}
               classes={{
@@ -193,44 +217,40 @@ export default function MenuAppBar() {
                 keepMounted: true, // Better open performance on mobile.
               }}
             >
-              <IconButton onClick={handleDrawerToggle} className={classes.closeMenuButton}>
-                <CloseIcon color="inherit" />
-              </IconButton>
-              <Grid
-                container
-                alignItems="center"
-                justify="center"
-              >
-                <SimpleModal />
-              </Grid>
-              <Divider className={classes.divider} />
+              <div className={classes.toolbar} >
+                <NewListButton />
+              </div>
+              <Divider />
               <ListList data={data} />
             </Drawer>
           </Hidden>
           <Hidden xsDown implementation="css">
             <Drawer
-              className={classes.drawer}
-              variant="permanent"
               classes={{
                 paper: classes.drawerPaper,
               }}
+              variant="permanent"
+              open
             >
-              <div className={classes.toolbar} />
+              <div className={classes.toolbar} >
+                <NewListButton />
+              </div>
+              <Divider />
 
-              <Divider className={classes.divider} />
-              <Grid
-                container
-                alignItems="center"
-                justify="center"
-              >
-                <SimpleModal />
-              </Grid>
-              <Divider className={classes.divider} />
               <ListList data={data} />
             </Drawer>
           </Hidden>
         </nav>
-      )}
+      )
+      }
     </>
   );
 }
+
+Header.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  window: PropTypes.func,
+};
