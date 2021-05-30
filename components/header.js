@@ -148,7 +148,7 @@ export default function Header(props) {
               startIcon={<AccountCircle />}
               variant="outlined"
               color="inherit"
-              onClick={() => signin()}
+              onClick={() => signIn()}
             >
               Login
             </Button>
