@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 
 //CONSTANTES
-import {URL_API_ITEM} from '../lib/constants';
+import { URL_API_ITEM } from '../lib/constants';
 
 //ICONES
 import AddIcon from '@material-ui/icons/Add';
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function InputItem({list_id}) {
+export default function InputItem({ list_id }) {
 
   const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
   const classes = useStyles();
@@ -48,6 +48,9 @@ export default function InputItem({list_id}) {
   const onSubmit = async (dados, e) => {
     const res = fetch(URL_API_ITEM, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(dados)
     })
     e.target.reset();
@@ -63,21 +66,21 @@ export default function InputItem({list_id}) {
       <Grid item xs={12} sm={8}>
         <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
           <InputBase
-            autoFocus 
+            autoFocus
             placeholder="Add a Item..."
             className={classes.input}
             inputRef={register({ required: "Item is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
             type="text"
-            name="task"
+            name="itemName"
             inputProps={{
               maxLength: 200,
             }}
           />
-          <InputBase 
-            style={{display:'none'}} 
-            name="list_id" 
+          <InputBase
+            style={{ display: 'none' }}
+            name="listId"
             type="text"
-            value={list_id} 
+            value={list_id}
             inputRef={register({ required: "list is required" })}
           />
           <Tooltip title="Add">

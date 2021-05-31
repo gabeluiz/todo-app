@@ -1,18 +1,14 @@
-
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 
 //User SESSION
 import { signIn, signOut, useSession } from 'next-auth/client';
 
 import {
-  makeStyles,
-  useTheme
+  makeStyles
 } from '@material-ui/core/styles';
 import {
   Typography,
   AppBar,
-  Hidden,
   Toolbar,
   IconButton,
   MenuItem,
@@ -20,30 +16,21 @@ import {
   Button,
   Divider,
   ListItemIcon,
-  Drawer,
   Fade,
 } from '@material-ui/core/';
 import Avatar from './avatar.js';
-import NewListButton from './new-list-button';
-import useFetch from '../hooks/useFetch';
 import { useRouter } from "next/router";
 
-//ICONS
+//Icons
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
-import ListList from './list-list.js';
+import DrawerLeft from './drawer.js';
 
 const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-  },
-  drawer: {
-    [theme.breakpoints.up('sm')]: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
   },
   appBar: {
     [theme.breakpoints.up('sm')]: {
@@ -57,26 +44,6 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
-  toolbar:{
-    display:'flex',
-    justifyContent:'center',
-    minHeight:theme.mixins.toolbar,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-    backgroundColor: theme.palette.background.default
-  }, Paper: {
-    width: drawerWidth,
-    border: 'none',
-  },
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-  },
   menuItem: {
     fontSize: 12,
   },
@@ -85,21 +52,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Header(props) {
+export default function Header() {
 
-  const { data, mutate } = useFetch('/api/list');
   const [session, loading] = useSession();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const router = useRouter();
-  const theme = useTheme();
-  const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -109,18 +68,10 @@ export default function Header(props) {
     setAnchorEl(null);
   };
 
-
-  const container = window !== undefined ? () => window().document.body : undefined;
-
-  //CENTRALIZAR DIV DE LOADING PARA FICAR BONITO
-  if (!data) return <div>Loading...</div>
-
-  const getListName = () => {
-    const indexListSelected = data.data.filter(el => el._id === router.query.id);
-    return indexListSelected[0] ? indexListSelected[0].list : "";
-  }
-
-
+  // const getListName = () => {
+  //   const indexListSelected = data.data.filter(el => el._id === router.query.id);
+  //   return indexListSelected[0] ? indexListSelected[0].list : "";
+  // }
 
   return (
     <>
@@ -130,7 +81,6 @@ export default function Header(props) {
             color="inherit"
             aria-label="open drawer"
             edge="start"
-            onClick={handleDrawerToggle}
             className={classes.menuButton}
           >
             <MenuIcon />
@@ -138,7 +88,7 @@ export default function Header(props) {
           {session && (
             <>
               <Typography variant="h6" noWrap>
-                {getListName()}
+                {/* {getListName()} */}
               </Typography>
             </>
           )}
@@ -201,56 +151,10 @@ export default function Header(props) {
         </Toolbar>
       </AppBar>
       {session && (
-        <nav className={classes.drawer} aria-label="mailbox folders">
-          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-          <Hidden smUp implementation="css">
-            <Drawer
-              container={container}
-              variant="temporary"
-              anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
-              }}
-            >
-              <div className={classes.toolbar} >
-                <NewListButton />
-              </div>
-              <Divider />
-              <ListList data={data} />
-            </Drawer>
-          </Hidden>
-          <Hidden xsDown implementation="css">
-            <Drawer
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              variant="permanent"
-              open
-            >
-              <div className={classes.toolbar} >
-                <NewListButton />
-              </div>
-              <Divider />
-
-              <ListList data={data} />
-            </Drawer>
-          </Hidden>
-        </nav>
+        <DrawerLeft />
       )
       }
     </>
   );
 }
 
-Header.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func,
-};

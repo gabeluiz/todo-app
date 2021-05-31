@@ -30,7 +30,6 @@ export default function List() {
   return (
     <Layout>
       <Toolbar />
-      <InputItem list_id={router.query.id} />
       <ListTask />
     </Layout >
   )

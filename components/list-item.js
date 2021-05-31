@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
     Card,
     CardContent,
@@ -11,7 +12,10 @@ import {
     ListItemSecondaryAction,
     ListItemText,
     Tooltip,
-    Typography
+    Typography,
+    InputBase,
+    Paper,
+    FormHelperText,
 } from '@material-ui/core';
 import { useRouter } from "next/router";
 import useSwr from 'swr';
@@ -23,12 +27,17 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 
 //CONSTANTES
-import {URL_API_ITEM} from '../lib/constants';
+import { URL_API_ITEM } from '../lib/constants';
+
+//Fetch data
+import { mutate as mutateGlobal } from 'swr';
+import useFetch from '../hooks/useFetch';
 
 //ICONS
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import DoneIcon from '@material-ui/icons/Done';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -61,21 +70,31 @@ const useStyles = makeStyles((theme) => ({
         '&$checked': {
             color: theme.palette.secondary.main,
         },
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    paperInput: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        border: 'none',
+        boxShadow: 'rgba(0, 0, 0, 0.3) 0 1px 3px',
+    },
+    helptext: {
+        color: theme.palette.error.light,
     }
 }));
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function ListTask() {
 
     const router = useRouter();
     const classes = useStyles();
     const [checked, setChecked] = useState([]);
-
-    const { data, error } = useSwr(
-        router.query.id ? `/api/item?list_id=${router.query.id}` : null,
-        fetcher
-    )
+    const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
+    const { data, error, mutate } = useFetch(router.query.id ? `/api/item?listId=${router.query.id}` : null);
 
     if (error) return <div>Failed to load list</div>
     if (!data) return <div>Loading...</div>
@@ -108,22 +127,6 @@ export default function ListTask() {
         })
     }
 
-
-    // //LOADING COM PRÉ DATA CASO NÃO CARREGUE OS DADOS DA API
-    // if (!data) {
-    //   return <Box display="flex" pt={12} justifyContent="center">
-    //     <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
-    //       Loading...
-    //     </Typography>
-    //   </Box>
-    // } else if (!data.success) {
-    //   return <Box display="flex" pt={12} justifyContent="center">
-    //     <Typography align="left" color="inherit" variant="h3" component="h1" gutterBottom>
-    //       Something went wrong, try again later...
-    //     </Typography>
-    //   </Box>
-    // }
-
     function handleOnDragEnd(result) {
         const { destination, source, draggableId } = result;
         if (!destination) {
@@ -151,8 +154,59 @@ export default function ListTask() {
 
     }
 
+    //INCLUIR ITEM
+    const onSubmit = async (dados, e) => {
+        const res = fetch(URL_API_ITEM, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dados)
+        })
+
+        mutate();
+        mutateGlobal(URL_API_ITEM);
+        e.target.reset();
+    }
+
     return (
         <>
+            <Grid
+                container
+                spacing={3}
+                direction="row"
+                justify="center"
+                alignItems="center">
+                <Grid item xs={12} sm={8}>
+                    <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
+                        <InputBase
+                            autoFocus
+                            placeholder="Add a Item..."
+                            className={classes.input}
+                            inputRef={register({ required: "Item is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+                            type="text"
+                            name="itemName"
+                            inputProps={{
+                                maxLength: 200,
+                            }}
+                        />
+                        <InputBase
+                            style={{ display: 'none' }}
+                            name="listId"
+                            type="text"
+                            value={router.query.id}
+                            inputRef={register({ required: "list is required" })}
+                        />
+                        <Tooltip title="Add">
+                            <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Paper>
+                    {errors.itemName && <FormHelperText className={classes.helptext}>{errors.itemName.message}</FormHelperText>}
+                </Grid>
+            </Grid>
+
             {(() => {
                 if (data?.data.length === 0) {
                     return (
@@ -189,7 +243,7 @@ export default function ListTask() {
                                                         ref={provided.innerRef}
                                                     >
                                                         <List className={classes.list}>
-                                                            {data?.data.map(({ _id, task, complete }, index) => {
+                                                            {data?.data.map(({ _id, itemName, complete }, index) => {
                                                                 if (!complete)
                                                                     return (
                                                                         <Draggable key={_id} draggableId={_id} index={index}>
@@ -201,7 +255,7 @@ export default function ListTask() {
                                                                                 >
                                                                                     <ListItem key={_id} role={undefined} button onClick={handleToggle(_id)}>
                                                                                         <ListItemIcon>
-                                                                                            <Checkbox
+                                                                                            {/* <Checkbox
                                                                                                 className={classes.checkbox}
                                                                                                 edge="start"
                                                                                                 checked={checked.indexOf(_id) !== -1}
@@ -209,15 +263,15 @@ export default function ListTask() {
                                                                                                 disableRipple
                                                                                                 checkedIcon={<DoneIcon />}
                                                                                                 icon={<RadioButtonUncheckedIcon />}
-                                                                                            />
+                                                                                            /> */}
                                                                                         </ListItemIcon>
-                                                                                        <ListItemText style={{ textDecoration: checked.indexOf(_id) !== -1 ? "line-through" : "" }} primary={task} />
+                                                                                        <ListItemText style={{ textDecoration: checked.indexOf(_id) !== -1 ? "line-through" : "" }} primary={itemName} />
                                                                                         <ListItemSecondaryAction>
-                                                                                            <Tooltip title="Delete">
+                                                                                            {/* <Tooltip title="Delete">
                                                                                                 <IconButton onClick={handleDelete(_id)} color="inherit" size="small" edge="end" aria-label="delete">
                                                                                                     <DeleteOutlineIcon size="small" />
                                                                                                 </IconButton>
-                                                                                            </Tooltip>
+                                                                                            </Tooltip> */}
                                                                                         </ListItemSecondaryAction>
                                                                                     </ListItem>
                                                                                 </div>

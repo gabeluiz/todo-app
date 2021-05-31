@@ -1,29 +1,60 @@
-import { connectToDatabase } from '../../../utils/database';
-import { ObjectId } from 'mongodb';
-import jwt from 'next-auth/jwt';
+import List from "../../../models/List";
+import '../../../utils/dbConnect';
 
-const secret = process.env.JWT_SECRET;
+export default async (req, res) => {
+  const {
+    query: { id },
+    method,
+  } = req;
 
-export default async function userHandler(req, res) {
+  switch (method) {
+    case "GET":
+      try {
+        const list = await List.findById(id);
 
-  const { query: { id, name }, method, } = req
+        return res.status(200).json({
+          success: true,
+          data: list,
+        });
+      } catch (error) {
+        return res.status(404).json({
+          success: false,
+        });
+      }
+    case "PUT":
+      try {
+        const mainList = await List.findByIdAndUpdate(id, req.body, {
+          new: true,
+          runValidators: true,
+        });
 
-  const token = await jwt.getToken({ req, secret });
+        return res.status(200).json({
+          success: true,
+          data: list,
+        });
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+        });
+      }
+    case "DELETE":
+      try {
+        await List.deleteOne({ _id: id });
 
-  if (token) {
-
-    let db = await connectToDatabase();
-
-    switch (method) {
-      case 'GET':
-        
-        const list = await db.collection('lists').findOne({"_id" : ObjectId(id)});
-
-        res.status(200).json({ data: list })
-        break
-      default:
-        res.setHeader('Allow', ['GET', 'PUT'])
-        res.status(405).end(`Method ${method} Not Allowed`)
-    }
+        return res.status(200).json({
+          success: true,
+          data: { id },
+        });
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+        });
+      }
+    default:
+      res.setHeaders("Allow", ["GET", "PUT", "DELETE"]);
+      return res
+        .status(405)
+        .json({ success: false })
+        .end(`Method ${method} Not Allowed`);
   }
-}
+};
