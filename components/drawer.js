@@ -178,7 +178,7 @@ export default function DrawerLeft(props) {
     }
 
     useEffect(() => {
-        const uIdToGo = data?.data[0]._id;
+        const uIdToGo = data?.data[0]?._id;
         if(uIdToGo){
             router.push('/list/' + uIdToGo);
         }else{
