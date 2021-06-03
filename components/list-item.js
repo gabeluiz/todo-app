@@ -156,7 +156,7 @@ export default function ListTask() {
 
     //INCLUIR ITEM
     const onSubmit = async (dados, e) => {
-        const res = fetch(URL_API_ITEM, {
+        const res = await fetch(URL_API_ITEM, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

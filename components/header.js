@@ -98,7 +98,7 @@ export default function Header() {
               startIcon={<AccountCircle />}
               variant="outlined"
               color="inherit"
-              onClick={() => signIn()}
+              onClick={() => signIn("google")}
             >
               Login
             </Button>

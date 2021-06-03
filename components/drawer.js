@@ -162,7 +162,7 @@ export default function DrawerLeft(props) {
     //INCLUIR ITEM
     const onSubmit = async (dados, e) => {
 
-        const res = fetch(URL_API_LIST, {
+        const res = await fetch(URL_API_LIST, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
