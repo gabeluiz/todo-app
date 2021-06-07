@@ -7,13 +7,10 @@ const ItemSchema = new mongoose.Schema({
         trim: true,
     },
     listId: { type: String, required: true },
-    status: { type: String, default: 'A' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date },
-    createdBy: {
-        type: String,
-        required: true
-    },
+    complete: { type: Boolean, default: 0},
+    createdBy: { type: String },
     updatedBy: { type: String },
 });
 

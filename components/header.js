@@ -58,7 +58,7 @@ export default function Header() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -68,10 +68,9 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  // const getListName = () => {
-  //   const indexListSelected = data.data.filter(el => el._id === router.query.id);
-  //   return indexListSelected[0] ? indexListSelected[0].list : "";
-  // }
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   return (
     <>
@@ -81,6 +80,7 @@ export default function Header() {
             color="inherit"
             aria-label="open drawer"
             edge="start"
+            onClick={handleDrawerToggle}
             className={classes.menuButton}
           >
             <MenuIcon />
@@ -151,7 +151,7 @@ export default function Header() {
         </Toolbar>
       </AppBar>
       {session && (
-        <DrawerLeft />
+        <DrawerLeft mobileOpen={mobileOpen} handleDrawerToggle={() => setMobileOpen(!mobileOpen)} />
       )
       }
     </>

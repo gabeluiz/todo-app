@@ -115,16 +115,23 @@ export default function ListTask() {
 
         const res = fetch(URL_API_ITEM, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(dados)
         })
     };
 
     //# DELETAR TASK
-    const handleDelete = (_id) => () => {
-        const res = fetch(URL_API_ITEM, {
+    const handleDelete = async (_id) => {
+        const res = await fetch(URL_API_ITEM + "/" +_id, {
             method: "DELETE",
-            body: JSON.stringify(_id)
+            headers: {
+                "Content-Type": "application/json",
+            },
         })
+
+        mutate();
     }
 
     function handleOnDragEnd(result) {
@@ -149,6 +156,9 @@ export default function ListTask() {
 
         const res = fetch(URL_API_ITEM, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(dados)
         })
 
@@ -244,7 +254,7 @@ export default function ListTask() {
                                                     >
                                                         <List className={classes.list}>
                                                             {data?.data.map(({ _id, itemName, complete }, index) => {
-                                                                if (!complete)
+                                                                if (!complete) {
                                                                     return (
                                                                         <Draggable key={_id} draggableId={_id} index={index}>
                                                                             {(provided, snapshot) => (
@@ -255,7 +265,7 @@ export default function ListTask() {
                                                                                 >
                                                                                     <ListItem key={_id} role={undefined} button onClick={handleToggle(_id)}>
                                                                                         <ListItemIcon>
-                                                                                            {/* <Checkbox
+                                                                                            <Checkbox
                                                                                                 className={classes.checkbox}
                                                                                                 edge="start"
                                                                                                 checked={checked.indexOf(_id) !== -1}
@@ -263,21 +273,45 @@ export default function ListTask() {
                                                                                                 disableRipple
                                                                                                 checkedIcon={<DoneIcon />}
                                                                                                 icon={<RadioButtonUncheckedIcon />}
-                                                                                            /> */}
+                                                                                            />
                                                                                         </ListItemIcon>
                                                                                         <ListItemText style={{ textDecoration: checked.indexOf(_id) !== -1 ? "line-through" : "" }} primary={itemName} />
                                                                                         <ListItemSecondaryAction>
-                                                                                            {/* <Tooltip title="Delete">
-                                                                                                <IconButton onClick={handleDelete(_id)} color="inherit" size="small" edge="end" aria-label="delete">
+                                                                                            <Tooltip title="Delete">
+                                                                                                <IconButton onClick={() => handleDelete(_id)} color="inherit" size="small" edge="end" aria-label="delete">
                                                                                                     <DeleteOutlineIcon size="small" />
                                                                                                 </IconButton>
-                                                                                            </Tooltip> */}
+                                                                                            </Tooltip>
                                                                                         </ListItemSecondaryAction>
                                                                                     </ListItem>
                                                                                 </div>
                                                                             )}
                                                                         </Draggable>
                                                                     )
+                                                                } else {
+                                                                    return (
+                                                                        <ListItem key={_id} role={undefined} button onClick={handleToggle(_id)}>
+                                                                            <ListItemIcon>
+                                                                                <Checkbox
+                                                                                    className={classes.checkbox}
+                                                                                    edge="start"
+                                                                                    checked={complete}
+                                                                                    disableRipple
+                                                                                    checkedIcon={<DoneIcon />}
+                                                                                    icon={<RadioButtonUncheckedIcon />}
+                                                                                />
+                                                                            </ListItemIcon>
+                                                                            <ListItemText style={{ textDecoration: complete ? "line-through" : "" }} primary={task} />
+                                                                            <ListItemSecondaryAction>
+                                                                                <Tooltip title="Delete">
+                                                                                    <IconButton onClick={() => handleDelete(_id)} color="inherit" size="small" edge="end" aria-label="delete">
+                                                                                        <DeleteOutlineIcon size="small" />
+                                                                                    </IconButton>
+                                                                                </Tooltip>
+                                                                            </ListItemSecondaryAction>
+                                                                        </ListItem>
+                                                                    )
+                                                                }
                                                             })}
                                                             {provided.placeholder}
                                                         </List>
@@ -287,49 +321,28 @@ export default function ListTask() {
                                         </DragDropContext>
 
                                         {/* {(() => {
-                          if (completed.length !== 0) {
-                            return (
-                              <Accordion className={classes.accordion}>
-                                <AccordionSummary
-                                  expandIcon={<ExpandMoreIcon />}
-                                  aria-controls="panel1a-content"
-                                  id="panel1a-header"
-                                >
-                                  <Typography variant="caption" >Completed ({completed.length}) </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                  <List className={classes.list}>
-                                    {data.data.map(({ _id, task, complete, order }, index) => {
-                                      if (complete)
-                                        return (
-                                          <ListItem key={_id} role={undefined} button onClick={handleToggle(_id)}>
-                                            <ListItemIcon>
-                                              <Checkbox
-                                                className={classes.checkbox}
-                                                edge="start"
-                                                checked={complete}
-                                                disableRipple
-                                                checkedIcon={<DoneIcon />}
-                                                icon={<RadioButtonUncheckedIcon />}
-                                              />
-                                            </ListItemIcon>
-                                            <ListItemText style={{ textDecoration: complete ? "line-through" : "" }} primary={task} />
-                                            <ListItemSecondaryAction>
-                                              <Tooltip title="Delete">
-                                                <IconButton onClick={handleDelete(_id)} color="inherit" size="small" edge="end" aria-label="delete">
-                                                  <DeleteOutlineIcon size="small" />
-                                                </IconButton>
-                                              </Tooltip>
-                                            </ListItemSecondaryAction>
-                                          </ListItem>
-                                        )
-                                    })}
-                                  </List>
-                                </AccordionDetails>
-                              </Accordion>
-                            )
-                          }
-                        })()} */}
+                                            if (completed.length !== 0) {
+                                                return (
+                                                    <Accordion className={classes.accordion}>
+                                                        <AccordionSummary
+                                                            expandIcon={<ExpandMoreIcon />}
+                                                            aria-controls="panel1a-content"
+                                                            id="panel1a-header"
+                                                        >
+                                                            <Typography variant="caption" >Completed ({completed.length}) </Typography>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails>
+                                                            <List className={classes.list}>
+                                                                {data.data.map(({ _id, task, completed, order }, index) => {
+                                                                    if (completed)
+                                                                        
+                                                                })}
+                                                            </List>
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                )
+                                            }
+                                        })()} */}
                                     </CardContent>
                                 </Card>
                             </Grid>

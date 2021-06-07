@@ -24,7 +24,7 @@ export default function ListList({ data }) {
 
     const list = (
         <List dense={true}>
-            {data.data.map(({ _id, listName }) => (
+            {data?.data.map(({ _id, listName }) => (
                 <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
                     <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
                         <ListItemText primary={listName} secondary="0 Item" />

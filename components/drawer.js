@@ -140,22 +140,17 @@ export default function DrawerLeft(props) {
     const { data, mutate } = useFetch('/api/list');
 
     const classes = useStyles();
-    const [mobileOpen, setMobileOpen] = useState(false);
     const theme = useTheme();
-    const { window } = props;
+    const { window, mobileOpen, handleDrawerToggle } = props;
     const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
     const [open, setOpen] = useState(false);
     const router = useRouter();
 
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
-
-    const handleClickOpen = () => {
+    const handleDialogOpen = () => {
         setOpen(true);
     };
 
-    const handleClose = () => {
+    const handleDialogClose = () => {
         setOpen(false);
     };
 
@@ -179,9 +174,9 @@ export default function DrawerLeft(props) {
 
     useEffect(() => {
         const uIdToGo = data?.data[0]?._id;
-        if(uIdToGo){
+        if (uIdToGo) {
             router.push('/list/' + uIdToGo);
-        }else{
+        } else {
             return;
         }
 
@@ -212,11 +207,11 @@ export default function DrawerLeft(props) {
                                 }}
                             >
                                 <div className={classes.toolbar} >
-                                    <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleClickOpen}>
+                                    <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
                                         New List
                                     </Button>
-                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                                        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
+                                        <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
                                             Create a New List
                                         </DialogTitle>
                                         <DialogContent dividers>
@@ -272,11 +267,11 @@ export default function DrawerLeft(props) {
                                 open
                             >
                                 <div className={classes.toolbar} >
-                                    <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleClickOpen}>
+                                    <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
                                         New List
                                     </Button>
-                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                                        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
+                                        <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
                                             Create a New List
                                         </DialogTitle>
                                         <DialogContent dividers>
