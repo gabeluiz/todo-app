@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, makeStyles, useTheme } from '@material-ui/core/styles';
-import ListList from './list-list.js';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -12,28 +11,35 @@ import {
     Divider,
     Drawer,
     Hidden,
-    InputBase,
     IconButton,
-    Paper,
     FormHelperText,
-    Tooltip,
     FormControlLabel,
     Switch,
     Typography,
     Button,
     Dialog,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction,
+    Menu,
+    MenuItem,
+    TextField,
+    DialogContentText,
+    Badge
 } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
+import Link from 'next/link';
 
 //Icons
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 //Constants
 import { URL_API_LIST } from '../lib/constants';
 
 //Fetch data
-import { mutate as mutateGlobal } from 'swr';
 import useFetch from '../hooks/useFetch';
 
 const drawerWidth = 280;
@@ -106,6 +112,15 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         minHeight: theme.mixins.toolbar,
     },
+    borderR: {
+        borderRight: `3px solid ${theme.palette.primary.main}`,
+    },
+    badge: {
+        marginRight: 15,
+    },
+    switchMain: {
+        marginTop: 15,
+    }
 }));
 
 const DialogTitle = withStyles(styles)((props) => {
@@ -137,7 +152,7 @@ const DialogActions = withStyles((theme) => ({
 
 export default function DrawerLeft(props) {
 
-    const { data, mutate } = useFetch('/api/list');
+    const { data, error, mutate } = useFetch('/api/list');
 
     const classes = useStyles();
     const theme = useTheme();
@@ -145,6 +160,27 @@ export default function DrawerLeft(props) {
     const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
     const [open, setOpen] = useState(false);
     const router = useRouter();
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    //# DELETAR TASK
+    const handleDelete = async (_id) => {
+        const res = await fetch(URL_API_LIST + "/" + _id, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        setAnchorEl(false);
+        mutate();
+    }
 
     const handleDialogOpen = () => {
         setOpen(true);
@@ -167,7 +203,6 @@ export default function DrawerLeft(props) {
 
         setOpen(false);
         mutate();
-        mutateGlobal(URL_API_LIST);
 
         e.target.reset();
     }
@@ -184,6 +219,7 @@ export default function DrawerLeft(props) {
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
+    if (error) return <div>Failed to load list</div>
     if (!data) return <div>Loading...</div>
 
     return (
@@ -210,16 +246,20 @@ export default function DrawerLeft(props) {
                                     <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
                                         New List
                                     </Button>
-                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
-                                        <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
+                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="form-dialog-list" open={open}>
+                                        <DialogTitle id="form-dialog-list" onClose={handleDialogClose}>
                                             Create a New List
                                         </DialogTitle>
-                                        <DialogContent dividers>
-                                            <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
-                                                <InputBase
+                                        <form onSubmit={handleSubmit(onSubmit)} >
+                                            <DialogContent dividers>
+                                                <DialogContentText>
+                                                    Please enter a list name here.
+                                                </DialogContentText>
+                                                <TextField
                                                     autoFocus
-                                                    placeholder="Add a List..."
-                                                    className={classes.input}
+                                                    margin="dense"
+                                                    fullWidth
+                                                    label="List name"
                                                     inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
                                                     type="text"
                                                     name="listName"
@@ -227,31 +267,52 @@ export default function DrawerLeft(props) {
                                                         maxLength: 200,
                                                     }}
                                                 />
-                                                <Tooltip title="Make this list master">
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Switch
-                                                                name="mainList"
-                                                                color="primary"
-                                                                inputRef={register()}
-                                                            />
-                                                        }
-                                                        label="Main list"
-                                                    />
-                                                </Tooltip>
-                                                <Divider className={classes.divider} orientation="vertical" />
-                                                <Tooltip title="Add">
-                                                    <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
-                                                        <AddIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Paper>
-                                            {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
-                                        </DialogContent>
+                                                {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
+                                                <FormControlLabel
+                                                    className={classes.switchMain}
+                                                    control={
+                                                        <Switch name="mainList"
+                                                            color="primary"
+                                                            inputRef={register()}
+                                                        />
+                                                    }
+                                                    label="Make this list main?"
+                                                />
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
+                                                    Save
+                                                </Button>
+                                            </DialogActions>
+                                        </form>
                                     </Dialog>
                                 </div>
                                 <Divider />
-                                <ListList data={data} />
+                                <List dense={true}>
+                                    {data?.data.map(({ _id, listName }) => (
+                                        <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
+                                            <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
+                                                <ListItemText primary={listName} />
+                                                <Badge color="secondary" badgeContent={1} className={classes.badge} />
+                                                <ListItemSecondaryAction>
+                                                    <IconButton edge="end" aria-label="actions" aria-haspopup="true" onClick={handleClick}>
+                                                        <MoreVertIcon />
+                                                    </IconButton>
+                                                    <Menu
+                                                        key={_id}
+                                                        id="simple-menu"
+                                                        anchorEl={anchorEl}
+                                                        keepMounted
+                                                        open={Boolean(anchorEl)}
+                                                        onClose={handleClose}
+                                                    >
+                                                        <MenuItem onClick={() => handleDelete(_id)}>Delete</MenuItem>
+                                                    </Menu>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        </Link>
+                                    ))}
+                                </List>
                             </Drawer>
                         </Hidden>
                     </>
@@ -270,16 +331,20 @@ export default function DrawerLeft(props) {
                                     <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
                                         New List
                                     </Button>
-                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="customized-dialog-title" open={open}>
-                                        <DialogTitle id="customized-dialog-title" onClose={handleDialogClose}>
+                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="form-dialog-list" open={open}>
+                                        <DialogTitle id="form-dialog-list" onClose={handleDialogClose}>
                                             Create a New List
                                         </DialogTitle>
-                                        <DialogContent dividers>
-                                            <Paper onSubmit={handleSubmit(onSubmit)} component="form" className={classes.paperInput}>
-                                                <InputBase
+                                        <form onSubmit={handleSubmit(onSubmit)}>
+                                            <DialogContent dividers>
+                                                <DialogContentText>
+                                                    Please enter a list name here.
+                                                </DialogContentText>
+                                                <TextField
                                                     autoFocus
-                                                    placeholder="Add a List..."
-                                                    className={classes.input}
+                                                    margin="dense"
+                                                    fullWidth
+                                                    label="List name"
                                                     inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
                                                     type="text"
                                                     name="listName"
@@ -287,30 +352,52 @@ export default function DrawerLeft(props) {
                                                         maxLength: 200,
                                                     }}
                                                 />
-                                                <Tooltip title="Make this list master">
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Switch name="mainList"
-                                                                color="primary"
-                                                                inputRef={register()}
-                                                            />
-                                                        }
-                                                        label="Main list"
-                                                    />
-                                                </Tooltip>
-                                                <Divider className={classes.divider} orientation="vertical" />
-                                                <Tooltip title="Add">
-                                                    <IconButton color="inherit" type="submit" className={classes.iconButton} aria-label="add">
-                                                        <AddIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Paper>
-                                            {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
-                                        </DialogContent>
+                                                {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
+                                                <FormControlLabel
+                                                    className={classes.switchMain}
+                                                    control={
+                                                        <Switch name="mainList"
+                                                            color="primary"
+                                                            inputRef={register()}
+                                                        />
+                                                    }
+                                                    label="Make this list main?"
+                                                />
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
+                                                    Save
+                                                </Button>
+                                            </DialogActions>
+                                        </form>
                                     </Dialog>
                                 </div>
                                 <Divider />
-                                <ListList data={data} />
+                                <List dense={true}>
+                                    {data?.data.map(({ _id, listName }) => (
+                                        <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
+                                            <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
+                                                <ListItemText primary={listName} />
+                                                <Badge color="secondary" badgeContent={1} className={classes.badge} />
+                                                <ListItemSecondaryAction>
+                                                    <IconButton edge="end" aria-label="actions" aria-haspopup="true" onClick={handleClick}>
+                                                        <MoreVertIcon />
+                                                    </IconButton>
+                                                    <Menu
+                                                        key={_id}
+                                                        id="simple-menu"
+                                                        anchorEl={anchorEl}
+                                                        keepMounted
+                                                        open={Boolean(anchorEl)}
+                                                        onClose={handleClose}
+                                                    >
+                                                        <MenuItem onClick={() => handleDelete(_id)}>Delete</MenuItem>
+                                                    </Menu>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        </Link>
+                                    ))}
+                                </List>
                             </Drawer>
                         </Hidden>
                     </>

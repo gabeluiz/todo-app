@@ -40,7 +40,6 @@ export default async (req, res) => {
     case "DELETE":
       try {
         await Item.deleteOne({ _id: id });
-        console.log(id);
 
         return res.status(200).json({
           success: true,
