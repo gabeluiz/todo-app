@@ -17,14 +17,15 @@ import {
   Divider,
   ListItemIcon,
   Fade,
+  Icon,
 } from '@material-ui/core/';
 import Avatar from './avatar.js';
-import { useRouter } from "next/router";
 
 //Icons
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import DrawerLeft from './drawer.js';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const drawerWidth = 280;
 
@@ -105,15 +106,17 @@ export default function Header() {
           </>}
           {session && (
             <>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
+              <Button
+                endIcon={<ExpandMoreIcon />}
                 onClick={handleMenu}
-                color="inherit"
+                size="small"
+                className={classes.menuItem}
               >
-                <Avatar></Avatar>
-              </IconButton>
+                <Avatar />
+                <Typography variant="inherit" noWrap>
+                  {session.user.name}
+                </Typography>
+              </Button>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -142,8 +145,8 @@ export default function Header() {
                   </Typography>
                 </MenuItem>
                 <Divider />
-                <MenuItem className={classes.menuItem} onClick={handleCloseMenu}>Profile</MenuItem>
-                <MenuItem className={classes.menuItem} onClick={handleCloseMenu}>My account</MenuItem>
+                {/* <MenuItem className={classes.menuItem} onClick={handleCloseMenu}>Profile</MenuItem>
+                <MenuItem className={classes.menuItem} onClick={handleCloseMenu}>My account</MenuItem> */}
                 <MenuItem className={classes.menuItem} onClick={() => signOut({ callbackUrl: "/" })}>Logout</MenuItem>
               </Menu>
             </>

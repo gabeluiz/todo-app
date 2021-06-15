@@ -54,7 +54,7 @@ const theme = createMuiTheme({
     // }
   },
   shape:{
-    borderRadius:16
+    borderRadius:10
   }
 });
 

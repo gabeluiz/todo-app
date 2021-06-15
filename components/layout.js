@@ -19,13 +19,11 @@ export default function Layout({ children }) {
     <>
       <Meta />
       <div className={classes.root}>
-        <CssBaseline />
         <Header />
         <Container>
           {children}
         </Container>
       </div>
-      <Footer />
     </>
   )
 }

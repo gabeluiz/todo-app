@@ -41,6 +41,7 @@ import { URL_API_LIST } from '../lib/constants';
 
 //Fetch data
 import useFetch from '../hooks/useFetch';
+import Footer from './footer';
 
 const drawerWidth = 280;
 
@@ -123,33 +124,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const DialogTitle = withStyles(styles)((props) => {
-    const { children, classes, onClose, ...other } = props;
-    return (
-        <MuiDialogTitle disableTypography className={classes.root} {...other}>
-            <Typography variant="h6">{children}</Typography>
-            {onClose ? (
-                <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
-            ) : null}
-        </MuiDialogTitle>
-    );
-});
-
-const DialogContent = withStyles((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(1),
-    },
-}))(MuiDialogActions);
-
 export default function DrawerLeft(props) {
 
     const { data, error, mutate } = useFetch('/api/list');
@@ -157,7 +131,6 @@ export default function DrawerLeft(props) {
     const classes = useStyles();
     const theme = useTheme();
     const { window, mobileOpen, handleDrawerToggle } = props;
-    const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
     const [open, setOpen] = useState(false);
     const router = useRouter();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -207,20 +180,28 @@ export default function DrawerLeft(props) {
         e.target.reset();
     }
 
-    useEffect(() => {
-        const uIdToGo = data?.data[0]?._id;
-        if (uIdToGo) {
-            router.push('/list/' + uIdToGo);
-        } else {
-            return;
-        }
-
-    }, [data]);
-
     const container = window !== undefined ? () => window().document.body : undefined;
 
     if (error) return <div>Failed to load list</div>
     if (!data) return <div>Loading...</div>
+
+
+    const listMenu = (
+        <>
+            <List dense={true}>
+                <Link as={`/`} href="/">
+                    <ListItem selected={router.asPath == "/" ? true : false} button className={router.asPath == "/" ? classes.borderR : null} >
+                        <ListItemText primary="Home" />
+                    </ListItem>
+                </Link>
+                <Link as={`/tasks-board`} href="/tasks-board">
+                    <ListItem selected={router.asPath == "/tasks-board" ? true : false} button className={router.asPath == "/tasks-board" ? classes.borderR : null} >
+                        <ListItemText primary="Tasks Board" />
+                    </ListItem>
+                </Link>
+            </List>
+        </>
+    );
 
     return (
         <>
@@ -242,77 +223,10 @@ export default function DrawerLeft(props) {
                                     keepMounted: true, // Better open performance on mobile.
                                 }}
                             >
-                                <div className={classes.toolbar} >
-                                    <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
-                                        New List
-                                    </Button>
-                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="form-dialog-list" open={open}>
-                                        <DialogTitle id="form-dialog-list" onClose={handleDialogClose}>
-                                            Create a New List
-                                        </DialogTitle>
-                                        <form onSubmit={handleSubmit(onSubmit)} >
-                                            <DialogContent dividers>
-                                                <DialogContentText>
-                                                    Please enter a list name here.
-                                                </DialogContentText>
-                                                <TextField
-                                                    autoFocus
-                                                    margin="dense"
-                                                    fullWidth
-                                                    label="List name"
-                                                    inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
-                                                    type="text"
-                                                    name="listName"
-                                                    inputProps={{
-                                                        maxLength: 200,
-                                                    }}
-                                                />
-                                                {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
-                                                <FormControlLabel
-                                                    className={classes.switchMain}
-                                                    control={
-                                                        <Switch name="mainList"
-                                                            color="primary"
-                                                            inputRef={register()}
-                                                        />
-                                                    }
-                                                    label="Make this list main?"
-                                                />
-                                            </DialogContent>
-                                            <DialogActions>
-                                                <Button style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
-                                                    Save
-                                                </Button>
-                                            </DialogActions>
-                                        </form>
-                                    </Dialog>
-                                </div>
+                                <div className={classes.drawerHeader} />
                                 <Divider />
-                                <List dense={true}>
-                                    {data?.data.map(({ _id, listName }) => (
-                                        <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
-                                            <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
-                                                <ListItemText primary={listName} />
-                                                <Badge color="secondary" badgeContent={1} className={classes.badge} />
-                                                <ListItemSecondaryAction>
-                                                    <IconButton edge="end" aria-label="actions" aria-haspopup="true" onClick={handleClick}>
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-                                                    <Menu
-                                                        key={_id}
-                                                        id="simple-menu"
-                                                        anchorEl={anchorEl}
-                                                        keepMounted
-                                                        open={Boolean(anchorEl)}
-                                                        onClose={handleClose}
-                                                    >
-                                                        <MenuItem onClick={() => handleDelete(_id)}>Delete</MenuItem>
-                                                    </Menu>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        </Link>
-                                    ))}
-                                </List>
+                                {listMenu}
+                                <Footer />
                             </Drawer>
                         </Hidden>
                     </>
@@ -327,77 +241,10 @@ export default function DrawerLeft(props) {
                                 variant="permanent"
                                 open
                             >
-                                <div className={classes.toolbar} >
-                                    <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
-                                        New List
-                                    </Button>
-                                    <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="form-dialog-list" open={open}>
-                                        <DialogTitle id="form-dialog-list" onClose={handleDialogClose}>
-                                            Create a New List
-                                        </DialogTitle>
-                                        <form onSubmit={handleSubmit(onSubmit)}>
-                                            <DialogContent dividers>
-                                                <DialogContentText>
-                                                    Please enter a list name here.
-                                                </DialogContentText>
-                                                <TextField
-                                                    autoFocus
-                                                    margin="dense"
-                                                    fullWidth
-                                                    label="List name"
-                                                    inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
-                                                    type="text"
-                                                    name="listName"
-                                                    inputProps={{
-                                                        maxLength: 200,
-                                                    }}
-                                                />
-                                                {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
-                                                <FormControlLabel
-                                                    className={classes.switchMain}
-                                                    control={
-                                                        <Switch name="mainList"
-                                                            color="primary"
-                                                            inputRef={register()}
-                                                        />
-                                                    }
-                                                    label="Make this list main?"
-                                                />
-                                            </DialogContent>
-                                            <DialogActions>
-                                                <Button style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
-                                                    Save
-                                                </Button>
-                                            </DialogActions>
-                                        </form>
-                                    </Dialog>
-                                </div>
+                                <div className={classes.drawerHeader} />
                                 <Divider />
-                                <List dense={true}>
-                                    {data?.data.map(({ _id, listName }) => (
-                                        <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
-                                            <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
-                                                <ListItemText primary={listName} />
-                                                <Badge color="secondary" badgeContent={1} className={classes.badge} />
-                                                <ListItemSecondaryAction>
-                                                    <IconButton edge="end" aria-label="actions" aria-haspopup="true" onClick={handleClick}>
-                                                        <MoreVertIcon />
-                                                    </IconButton>
-                                                    <Menu
-                                                        key={_id}
-                                                        id="simple-menu"
-                                                        anchorEl={anchorEl}
-                                                        keepMounted
-                                                        open={Boolean(anchorEl)}
-                                                        onClose={handleClose}
-                                                    >
-                                                        <MenuItem onClick={() => handleDelete(_id)}>Delete</MenuItem>
-                                                    </Menu>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        </Link>
-                                    ))}
-                                </List>
+                                {listMenu}
+                                <Footer />
                             </Drawer>
                         </Hidden>
                     </>
@@ -405,6 +252,193 @@ export default function DrawerLeft(props) {
             </nav>
         </>
     )
+
+    // return (
+    //     <>
+    //         <nav className={classes.drawer} aria-label="mailbox folders">
+    //             {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+    //             {mobileOpen && (
+    //                 <>
+    //                     <Hidden smUp implementation="css">
+    //                         <Drawer
+    //                             container={container}
+    //                             variant="temporary"
+    //                             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+    //                             open={mobileOpen}
+    //                             onClose={handleDrawerToggle}
+    //                             classes={{
+    //                                 paper: classes.drawerPaper,
+    //                             }}
+    //                             ModalProps={{
+    //                                 keepMounted: true, // Better open performance on mobile.
+    //                             }}
+    //                         >
+    //                             <div className={classes.toolbar} >
+    //                                 <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
+    //                                     New List
+    //                                 </Button>
+    //                                 <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="form-dialog-list" open={open}>
+    //                                     <DialogTitle id="form-dialog-list" onClose={handleDialogClose}>
+    //                                         Create a New List
+    //                                     </DialogTitle>
+    //                                     <form onSubmit={handleSubmit(onSubmit)} >
+    //                                         <DialogContent dividers>
+    //                                             <DialogContentText>
+    //                                                 Please enter a list name here.
+    //                                             </DialogContentText>
+    //                                             <TextField
+    //                                                 autoFocus
+    //                                                 margin="dense"
+    //                                                 fullWidth
+    //                                                 label="List name"
+    //                                                 inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+    //                                                 type="text"
+    //                                                 name="listName"
+    //                                                 inputProps={{
+    //                                                     maxLength: 200,
+    //                                                 }}
+    //                                             />
+    //                                             {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
+    //                                             <FormControlLabel
+    //                                                 className={classes.switchMain}
+    //                                                 control={
+    //                                                     <Switch name="mainList"
+    //                                                         color="primary"
+    //                                                         inputRef={register()}
+    //                                                     />
+    //                                                 }
+    //                                                 label="Make this list main?"
+    //                                             />
+    //                                         </DialogContent>
+    //                                         <DialogActions>
+    //                                             <Button style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
+    //                                                 Save
+    //                                             </Button>
+    //                                         </DialogActions>
+    //                                     </form>
+    //                                 </Dialog>
+    //                             </div>
+    //                             <Divider />
+    //                             <List dense={true}>
+    //                                 {data?.data.map(({ _id, listName }) => (
+    //                                     <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
+    //                                         <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
+    //                                             <ListItemText primary={listName} />
+    //                                             <Badge color="secondary" badgeContent={1} className={classes.badge} />
+    //                                             <ListItemSecondaryAction>
+    //                                                 <IconButton edge="end" aria-label="actions" aria-haspopup="true" onClick={handleClick}>
+    //                                                     <MoreVertIcon />
+    //                                                 </IconButton>
+    //                                                 <Menu
+    //                                                     key={_id}
+    //                                                     id="simple-menu"
+    //                                                     anchorEl={anchorEl}
+    //                                                     keepMounted
+    //                                                     open={Boolean(anchorEl)}
+    //                                                     onClose={handleClose}
+    //                                                 >
+    //                                                     <MenuItem onClick={() => handleDelete(_id)}>Delete</MenuItem>
+    //                                                 </Menu>
+    //                                             </ListItemSecondaryAction>
+    //                                         </ListItem>
+    //                                     </Link>
+    //                                 ))}
+    //                             </List>
+    //                         </Drawer>
+    //                     </Hidden>
+    //                 </>
+    //             )}
+    //             {!mobileOpen && (
+    //                 <>
+    //                     <Hidden xsDown implementation="css">
+    //                         <Drawer
+    //                             classes={{
+    //                                 paper: classes.drawerPaper,
+    //                             }}
+    //                             variant="permanent"
+    //                             open
+    //                         >
+    //                             <div className={classes.toolbar} >
+    //                                 <Button startIcon={<AddIcon />} style={{ margin: "20px", boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" onClick={handleDialogOpen}>
+    //                                     New List
+    //                                 </Button>
+    //                                 <Dialog fullWidth={true} maxWidth={'sm'} onClose={handleDialogClose} aria-labelledby="form-dialog-list" open={open}>
+    //                                     <DialogTitle id="form-dialog-list" onClose={handleDialogClose}>
+    //                                         Create a New List
+    //                                     </DialogTitle>
+    //                                     <form onSubmit={handleSubmit(onSubmit)}>
+    //                                         <DialogContent dividers>
+    //                                             <DialogContentText>
+    //                                                 Please enter a list name here.
+    //                                             </DialogContentText>
+    //                                             <TextField
+    //                                                 autoFocus
+    //                                                 margin="dense"
+    //                                                 fullWidth
+    //                                                 label="List name"
+    //                                                 inputRef={register({ required: "List is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+    //                                                 type="text"
+    //                                                 name="listName"
+    //                                                 inputProps={{
+    //                                                     maxLength: 200,
+    //                                                 }}
+    //                                             />
+    //                                             {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
+    //                                             <FormControlLabel
+    //                                                 className={classes.switchMain}
+    //                                                 control={
+    //                                                     <Switch name="mainList"
+    //                                                         color="primary"
+    //                                                         inputRef={register()}
+    //                                                     />
+    //                                                 }
+    //                                                 label="Make this list main?"
+    //                                             />
+    //                                         </DialogContent>
+    //                                         <DialogActions>
+    //                                             <Button style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
+    //                                                 Save
+    //                                             </Button>
+    //                                         </DialogActions>
+    //                                     </form>
+    //                                 </Dialog>
+    //                             </div>
+    //                             <Divider />
+    //                             <List dense={true}>
+    //                                 {data?.data.map(({ _id, listName }) => (
+    //                                     <Link key={_id} as={`/list/${_id}`} href="/list/[id]">
+    //                                         <ListItem selected={router.asPath == "/list/" + _id ? true : false} button className={router.asPath == "/list/" + _id ? classes.borderR : null} >
+    //                                             <ListItemText primary={listName} />
+    //                                             <Badge color="secondary" badgeContent={1} className={classes.badge} />
+    //                                             <ListItemSecondaryAction>
+    //                                                 <IconButton edge="end" aria-label="actions" aria-controls="fade-menu" aria-haspopup="true" onClick={handleClick}>
+    //                                                     <MoreVertIcon />
+    //                                                 </IconButton>
+    //                                                 <Menu
+    //                                                     key={_id}
+    //                                                     elevation={0}
+    //                                                     id="simple-menu"
+    //                                                     anchorEl={anchorEl}
+    //                                                     keepMounted
+    //                                                     open={Boolean(anchorEl)}
+    //                                                     onClose={handleClose}
+    //                                                 >
+    //                                                     <MenuItem dense onClose={handleClose}>Turn Main List</MenuItem>
+    //                                                     <MenuItem dense onClose={handleClose}>Edit</MenuItem>
+    //                                                     <MenuItem dense onClick={() => handleDelete(_id)}>Delete</MenuItem>
+    //                                                 </Menu>
+    //                                             </ListItemSecondaryAction>
+    //                                         </ListItem>
+    //                                     </Link>
+    //                                 ))}
+    //                             </List>
+    //                         </Drawer>
+    //                     </Hidden>
+    //                 </>
+    //             )}
+    //         </nav>
+    //     </>
+    // )
 }
 
 DrawerLeft.propTypes = {
