@@ -17,9 +17,11 @@ import {
   Divider,
   ListItemIcon,
   Fade,
-  Icon,
+  Tooltip,
+  Switch
 } from '@material-ui/core/';
 import Avatar from './avatar.js';
+import useDarkMode from 'use-dark-mode';
 
 //Icons
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -60,6 +62,7 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { value: isDark, toggle: toggleDarkMode } = useDarkMode();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -94,6 +97,14 @@ export default function Header() {
             </>
           )}
           <div className={classes.grow} />
+          <Tooltip title="Toggle light / dark theme">
+            <Switch
+              onChange={toggleDarkMode}
+              name="isDark"
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+              checked={isDark}
+            />
+          </Tooltip>
           {!session && <> {' '}
             <Button
               startIcon={<AccountCircle />}

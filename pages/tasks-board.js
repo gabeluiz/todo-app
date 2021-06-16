@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import Layout from '../components/layout';
 import Toolbar from '../components/toolbar';
 import ListTaskBoard from '../components/list-task-board';
-import { Fab } from '@material-ui/core';
+import { Fab, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DialogMoreList from './../components/dialog-more-list';
 import useFetch from '../hooks/useFetch';
 import toast, { Toaster } from 'react-hot-toast';
+import { useSession } from 'next-auth/client';
 import {
     URL_API_ITEM,
     URL_API_LIST
@@ -28,9 +29,11 @@ const useStyles = makeStyles((theme) => ({
 export default function TasksBoard() {
 
     const classes = useStyles();
+    const [session, loading] = useSession();
 
     //States
     const [open, setOpen] = useState(false);
+    const [currentEdit, setCurrentEdit] = useState('');
 
     //Data
     const { data, error, mutate } = useFetch(URL_API_LIST);
@@ -54,11 +57,30 @@ export default function TasksBoard() {
         if (res.ok) {
             mutate();
             toast.success("Successfully created!");
-        }else{
+        } else {
             toast.error("This didn't work.");
         }
 
         e.target.reset();
+    }
+
+    const handleEdit = async (dados) => {
+
+        const res = await fetch(URL_API_LIST + "/" + dados._id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dados)
+        })
+
+        if (res.ok) {
+            mutate();
+            setCurrentEdit('');
+            toast.success("Successfully updated!");
+        } else {
+            toast.error("This didn't work.");
+        }
     }
 
     //# DELETAR TASK
@@ -70,12 +92,10 @@ export default function TasksBoard() {
             },
         })
 
-        console.log(res)
-
         if (res.ok) {
             mutate();
             toast.success("Successfully deleted!");
-        }else{
+        } else {
             toast.error("This didn't work.");
         }
     }
@@ -85,15 +105,41 @@ export default function TasksBoard() {
         setOpen(!open);
     };
 
+    if (!session) {
+        return (
+            <Layout>
+                <Toolbar />
+                <Typography variant="h5">
+                    Login
+                </Typography>
+                <Typography variant="subtitle2">
+                    You must be signed in to view this page
+                </Typography>
+            </Layout>
+        )
+    }
+
     return (
         <Layout>
             <Toaster />
             <Toolbar />
-            <ListTaskBoard data={data?.data} handleDelete={handleDelete} />
-            <Fab onClick={handleDialogToggle} aria-label="Add" className={classes.fab} color="secondary">
+            <ListTaskBoard
+                data={data?.data}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+                currentEdit={currentEdit}
+                setCurrentEdit={setCurrentEdit} />
+            <Fab
+                onClick={handleDialogToggle}
+                aria-label="Add"
+                className={classes.fab}
+                color="secondary">
                 <AddIcon />
             </Fab>
-            <DialogMoreList open={open} handleDialogToggle={() => setOpen(!open)} onSubmit={onSubmit} />
+            <DialogMoreList
+                open={open}
+                handleDialogToggle={() => setOpen(!open)}
+                onSubmit={onSubmit} />
         </Layout>
     )
 }

@@ -17,7 +17,7 @@ export default async (req, res) => {
         switch (method) {
             case "GET":
                 try {
-                    const itens = await Item.find({listId:req.query.listId}).sort({
+                    const itens = await Item.find({ createdBy: token.sub }).sort({
                         createdAt: "desc",
                     });
 
@@ -31,11 +31,13 @@ export default async (req, res) => {
                     });
                 }
             case "POST":
-                
+
                 data.createdBy = token.sub;
-                
+
                 try {
                     const itens = await Item.create(data);
+
+                    console.log(itens)
 
                     return res.status(201).json({
                         success: true,

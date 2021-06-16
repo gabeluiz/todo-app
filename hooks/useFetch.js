@@ -1,5 +1,4 @@
 import useSWR from "swr";
-import Router from 'next/router';
 
 export default function useFetch(url) {
   const { data, error, mutate } = useSWR(url, async (url) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Card,
     CardActions,
@@ -9,12 +9,15 @@ import {
     IconButton,
     Typography,
     Badge,
-}
-    from "@material-ui/core";
-import {
-    makeStyles
-}
-    from '@material-ui/core/styles';
+    TextField,
+    FormHelperText,
+    Button,
+} from "@material-ui/core";
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useForm } from 'react-hook-form';
+import ListTask from './list-task';
+import toast, { Toaster } from 'react-hot-toast';
+
 //icons
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -22,7 +25,7 @@ import EditIcon from '@material-ui/icons/Edit';
 
 //data
 import useFetch from '../hooks/useFetch';
-import { URL_API_ITEM } from '../lib/constants';
+import { URL_API_ITEM, URL_API_LIST } from '../lib/constants';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,18 +47,67 @@ const useStyles = makeStyles((theme) => ({
     margin: {
         margin: theme.spacing(1),
     },
+    inputTask: {
+        margin: 6,
+    },
 }));
 
 
 export default function ListTaskBoard(props) {
 
-    //Style
     const classes = useStyles();
+    const theme = useTheme();
+    const { data, handleDelete, handleEdit, currentEdit, setCurrentEdit } = props;
+    const { register, handleSubmit, watch, errors } = useForm({ mode: "onChange" });
+    const [currentNew, setCurrentNew] = useState('');
 
-    const { data, handleDelete } = props;
+    const { register: register2, errors: errors2, handleSubmit: handleSubmit2 } = useForm({ mode: "onChange" });
+
+    const { data: itemList, error, mutate } = useFetch(URL_API_ITEM);
+    console.log(itemList);
+
+    const handleEditTitle = (e, _id) => {
+
+        if (currentEdit == _id) {
+            setCurrentEdit('');
+            return;
+        }
+        setCurrentEdit(_id);
+        e.preventDefault();
+    }
+
+    const handleNew = (e, _id) => {
+        if (currentNew == _id) {
+            setCurrentNew('');
+            return;
+        }
+        setCurrentNew(_id);
+        e.preventDefault();
+    }
+
+    const hadleSubmitItem = async (dados, e) => {
+        console.log(dados)
+        const res = await fetch(URL_API_ITEM, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dados)
+        })
+
+        if (res.ok) {
+            mutate();
+            setCurrentNew('');
+            toast.success("Successfully created!");
+        } else {
+            toast.error("This didn't work.");
+        }
+        e.target.reset();
+    }
 
     return (
         <div className={classes.root}>
+            <Toaster />
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Typography variant="h5">
@@ -81,40 +133,102 @@ export default function ListTaskBoard(props) {
                                 </Grid>
                             </Grid>
                         )
-
                     } else {
                         return (
                             <>
                                 {data.map(({ _id, listName }) => (
                                     <Grid item xs={12} sm={6} key={_id}>
+
                                         <Card className={classes.root}>
-                                            <CardHeader
-                                                disableTypography
-                                                action={
-                                                    <>
-                                                        <IconButton aria-label="edit" color="inherit" size="small">
-                                                            <EditIcon fontSize="inherit" />
-                                                        </IconButton>
-                                                        <IconButton aria-label="delete" onClick={() => handleDelete(_id)} color="inherit" className={classes.margin} size="small">
-                                                            <DeleteIcon fontSize="inherit" />
-                                                        </IconButton>
-                                                    </>
-                                                }
-                                                title={listName}
-                                            />
+                                            <form onSubmit={handleSubmit(handleEdit)} >
+                                                <CardHeader
+                                                    disableTypography
+                                                    action={
+                                                        <>
+                                                            {(currentEdit == _id ?
+                                                                <IconButton aria-label="edit" color="inherit" size="small" type="submit" >
+                                                                    <AddIcon fontSize="inherit" />
+                                                                </IconButton>
+                                                                :
+                                                                <IconButton aria-label="edit" color="inherit" size="small" type="button" onClick={(e) => handleEditTitle(e, _id)}>
+                                                                    <EditIcon fontSize="inherit" />
+                                                                </IconButton>
+                                                            )}
+
+                                                            <IconButton aria-label="delete" onClick={() => handleDelete(_id)} color="inherit" className={classes.margin} size="small">
+                                                                <DeleteIcon fontSize="inherit" />
+                                                            </IconButton>
+                                                        </>
+                                                    }
+                                                    title={(currentEdit == _id ?
+                                                        <TextField
+                                                            autoFocus
+                                                            defaultValue={listName}
+                                                            fullWidth
+                                                            type="text"
+                                                            name="listName"
+                                                            inputProps={{
+                                                                maxLength: 200,
+                                                            }}
+                                                            inputRef={register({ required: "Board name is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+                                                        /> : listName)}
+                                                />
+                                                {errors.listName && <FormHelperText className={classes.helptext}>{errors.listName.message}</FormHelperText>}
+                                                <TextField
+                                                    style={{ display: 'none' }}
+                                                    name="_id"
+                                                    type="text"
+                                                    value={currentEdit}
+                                                    inputRef={register({ required: "list is required" })}
+                                                />
+                                            </form>
                                             <Divider />
                                             <CardContent>
-                                                {/* aqui lsita das tasks */}
-                                                {_id}
+                                                <ListTask listId={_id} itemList={itemList} />
                                             </CardContent>
                                             <Divider />
-                                            <CardActions className={classes.actions}>
-                                                <Badge color="primary" badgeContent={1} className={classes.margin} />
-                                                <IconButton color="inherit" aria-label="add">
-                                                    <AddIcon fontSize="small" />
-                                                </IconButton>
-                                            </CardActions>
+                                            <form onSubmit={handleSubmit2(hadleSubmitItem)} >
+                                                <CardActions className={classes.actions}>
+                                                    <>
+                                                        {(currentNew == _id ?
+                                                            <TextField
+                                                                fullWidth
+                                                                type="text"
+                                                                name="itemName"
+                                                                inputProps={{
+                                                                    maxLength: 200,
+                                                                }}
+                                                                className={classes.inputTask}
+                                                                inputRef={register2({ required: "Item name is required", maxLength: { value: 200, message: "Max lenght is 200 characters" } })}
+                                                            />
+                                                            :
+                                                            ''
+                                                        )}
+
+                                                        <TextField
+                                                            style={{ display: 'none' }}
+                                                            name="listId"
+                                                            type="text"
+                                                            value={currentNew}
+                                                            inputRef={register2({ required: "list is required" })}
+                                                        />
+                                                    </>
+                                                    <>
+                                                        {(currentNew == _id ?
+                                                            <Button size="small" style={{ boxShadow: `0 0 5px ${theme.palette.primary.main}` }} variant="contained" color="primary" type="submit">
+                                                                Save
+                                                            </Button>
+                                                            :
+                                                            <IconButton size="medium" aria-label="edit" color="inherit" type="button" onClick={(e) => handleNew(e, _id)}>
+                                                                <AddIcon fontSize="small" />
+                                                            </IconButton>
+                                                        )}
+                                                    </>
+
+                                                </CardActions>
+                                            </form>
                                         </Card>
+
                                     </Grid>
                                 ))}
                             </>
@@ -122,7 +236,7 @@ export default function ListTaskBoard(props) {
                     }
                 })()}
             </Grid>
-        </div>
+        </div >
 
     )
 }

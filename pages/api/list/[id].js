@@ -23,7 +23,7 @@ export default async (req, res) => {
       }
     case "PUT":
       try {
-        const mainList = await List.findByIdAndUpdate(id, req.body, {
+        const list = await List.findByIdAndUpdate(id, req.body, {
           new: true,
           runValidators: true,
         });
